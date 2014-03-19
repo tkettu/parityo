@@ -36,7 +36,7 @@ public class RBTree<E> {
 
 	/**
 		* Metodi add muodostaa parametrina annetusta objektista uuden solmun ja lisää
-		* sen puuhun ja kutsuu puun tasapainottavaa metodia fixBRTree
+		* sen puuhun ja kutsuu solmulle tasapainotusmetodia RBTreeAddFixup
 		* @author Juhani Seppälä
 		* @param data Puuhun lisättävä objekti
 		*
@@ -45,8 +45,8 @@ public class RBTree<E> {
 	}
 	
 	/**
-		* Metodi remove poistaa parametrina annetun objektin puusta ja kutsuu puun tasapainottavaa
-		* metodia fixRBTree
+		* Metodi remove poistaa parametrina annetun objektin puusta ja kutsuu tasapainotusmetodia
+		* RBTreeRemoveFixup
 		* @author Tero Kettunen
 		* @param data Puusta poistettava objekti
 		*
