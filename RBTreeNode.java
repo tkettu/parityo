@@ -3,13 +3,16 @@
 	* @author Juhani Seppälä
 	* 
 	*/
-public class RBTreeNode<E> {
+public class RBTreeNode<E extends Comparable<E>> {
+	private E element;
+	private RBTreeNode<E> leftChild;
+	private RBTreeNode<E> rightChild;
 
 
 	/**
 		* Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
 		* solmun
-		* @param element solmun hyötytiedoksi tuleva data
+		* @param element Solmun hyötytiedoksi tuleva data
 		*
 		*/
 	public RBTReeNode(E element){
@@ -36,6 +39,14 @@ public class RBTreeNode<E> {
 		* @return Solmun vanhempi tai null, jos solmu on puun juurisolmu
 		*/
 	public RBTreeNode<E> getParent(){
+	}
+
+	/**
+		* Metodi setElement asettaa parametrina saadun objektin tämän solmun hyötytiedoksi
+		* @param element Solmun uusi hyötytieto
+		*
+		*/
+	public void setElement(E element) {
 	}
 	
 	/**
