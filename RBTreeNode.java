@@ -5,8 +5,10 @@
 	*/
 public class RBTreeNode<E extends Comparable<E>> {
 	private E element;
+	private RBTreeNode<E> parent;
 	private RBTreeNode<E> leftChild;
 	private RBTreeNode<E> rightChild;
+	private String color;
 
 
 	/**
@@ -15,7 +17,20 @@ public class RBTreeNode<E extends Comparable<E>> {
 		* @param element Solmun hyötytiedoksi tuleva data
 		*
 		*/
-	public RBTReeNode(E element){
+	public void RBTReeNode(E element){
+	}
+
+	/**
+		* Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
+		* solmun
+		* @param element Solmun hyötytiedoksi tuleva data
+		*
+		*/
+	public void RBTReeNode(E element,
+												RBTreeNode<E> parent,
+												RBTreeNode<E> leftChild,
+												RBTreeNode<E> rightChild,
+												String color){
 	}
 	
 	/**
@@ -24,6 +39,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public RBTreeNode<E> getLeftChild(){
+		return leftChild;
 	}
 	
 	/**
@@ -32,6 +48,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public RBTreeNode<E> getRightChild(){
+		return rightChild;
 	}
 	
 	/**
@@ -39,6 +56,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		* @return Solmun vanhempi tai null, jos solmu on puun juurisolmu
 		*/
 	public RBTreeNode<E> getParent(){
+		return parent;
 	}
 
 	/**
@@ -47,6 +65,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public void setElement(E element) {
+		this.element = element;
 	}
 	
 	/**
@@ -56,6 +75,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public void setLeftChild(RBTreeNode<E> node){
+		leftChild = node;
 	}
 	
 	/**
@@ -65,6 +85,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public void setRightChild(RBTreeNode<E> node){
+		rightChild = node;
 	}
 	
 	/**
@@ -73,6 +94,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public void setParent(RBTreeNode<E> node){
+		parent = node;
 	}
 	
 	/**
@@ -81,6 +103,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public void setColor(String color){
+		this.color =  color;
 	}
 	
 	/**
@@ -89,6 +112,7 @@ public class RBTreeNode<E extends Comparable<E>> {
 		*
 		*/
 	public String getColor(){
+		return color;
 	}
 	
 }
