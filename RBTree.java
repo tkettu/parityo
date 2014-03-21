@@ -33,7 +33,16 @@ public class RBTree<E> {
     */
   public void setRoot(BRTreeNode<E> node){
   }
-
+  
+  /**
+   * Metodi getRoot palauttaa puun juuren
+   * @author
+   * @return puun juuri
+   */
+  public BRTreeNode<E> getRoot(){
+  }
+  
+   
   /**
     * Metodi add muodostaa parametrina annetusta objektista uuden solmun ja lisää
     * sen puuhun ja kutsuu solmulle tasapainotusmetodia RBTreeAddFixup
