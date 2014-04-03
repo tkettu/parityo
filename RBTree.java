@@ -93,7 +93,7 @@ public class RBTree<E> {
   }
 
   /** 
-    * Metodi difference muodostaa leikkauksen kutsuttavasta ja parametrina saadusta puusta
+    * Metodi difference muodostaa erotuksen kutsuttavasta ja parametrina saadusta puusta
     * @author Juhani Seppälä
     * @param t erotukseen tuleva puu
     * @return Kahden puun joukko-opillista erotusta kuvaava uusi puu
