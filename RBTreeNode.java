@@ -31,7 +31,7 @@ public class RBTreeNode<E extends Comparable<E>> {
                         RBTreeNode<E> leftChild,
                         RBTreeNode<E> rightChild,
                         String color){
-    this.parent element = element;
+    this.element = element;
     this.parent = parent;
     this.leftChild = leftChild;
     this.rightChild = rightChild;
