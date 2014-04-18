@@ -15,6 +15,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree(){
+
   }
 
   /**
@@ -23,7 +24,7 @@ public class RBTree<E extends Comparable<E>> {
     * @return Palauttaa true, jos puu on tyhjä
     */
   public boolean isEmpty() {
-	 return true;	//Kääntöä varten (TK)
+    return size == 0;
   }
   
   /**
@@ -33,6 +34,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public void setRoot(RBTreeNode<E> node){
+    root = node;
   }
   
   /**
@@ -41,7 +43,7 @@ public class RBTree<E extends Comparable<E>> {
    * @return puun juuri
    */
   public RBTreeNode<E> getRoot(){
-	 return root;	
+    return root;	
   }
   
    
@@ -58,6 +60,7 @@ public class RBTree<E extends Comparable<E>> {
       RBTreeNode<E> node = new RBTreeNode<E>(data);
       node.setColor(0);
       root = node;
+      size++;
       return true;
     }
     while (n != null) {
@@ -70,6 +73,7 @@ public class RBTree<E extends Comparable<E>> {
           node.setColor(0);
           n.setRightChild(node);
           RBTreeAddFixup(node);
+          size++;
           return true;
         }
         else
@@ -81,6 +85,7 @@ public class RBTree<E extends Comparable<E>> {
           node.setColor(0);
           n.setLeftChild(node);
           RBTreeAddFixup(node);
+          size++;
           return true;
         }
         else
@@ -98,16 +103,64 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public void remove(E data){
+    // Harkitse search() käyttöä alussa? successor() ja min() myös käytettävissä (JS)
   }
   
   /**
     * Metodi search etsii ja palauttaa puusta parametrina annetun objektin
     * @author Juhani Seppälä
     * @param data Puusta etsittävä objekti
+    * @return 
     *
     */
-  public E search(E data){
-	 return data;	//Kääntöä varten (TK)
+  public RBTreeNode<E> search(E data) {
+    if (size == 0)
+      return null;
+    RBTreeNode<E> n = this.getRoot();
+    while (n != null) {
+      if (data.compareTo(n.getElement()) == 0)
+        return n;
+      if (data.compareTo(n.getElement()) < 0)
+        n = n.getLeftChild();
+      else
+        n = n.getRightChild();
+    }
+    return null;
+  }
+
+  /**
+    * Metodi successor palauttaa parametrina annetun solmun seuraajan puussa
+    * (Cormen, Leiserson, Rivest)
+    * @author Juhani Seppälä
+    * @param node solmu, jonka seuraajaa etsitään
+    * @return parametrina annetun solmun seuraaja puussa
+    *
+    */
+  public RBTreeNode<E> successor(RBTreeNode<E> node) {
+    if (node.getRightChild() != null)
+      return min(node.getRightChild());
+    else {
+      RBTreeNode<E> n = node.getParent();
+      while (n != null && node == n.getRightChild()) {
+        node = n;
+        n = n.getParent();
+      }
+      return n;
+    }
+  }
+
+  /**
+    * Metodi min hakee minimiä parametrina annetusta solmusta alkaen
+    * (Cormen, Leiserson, Rivest)
+    * @author Juhani Seppälä
+    * @param node solmu (tai alipuun juuri), josta alkaen etsitään minimiä
+    * @return (ali)puun minimialkio
+    *
+    */
+  public RBTreeNode<E> min(RBTreeNode<E> node) {
+    while (node.getLeftChild() != null)
+      node = node.getLeftChild();
+    return node;
   }
 
   /** 
@@ -118,7 +171,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> union(RBTree<E> t) {
-	 return t;	//Kääntöä varten (TK)
+    return t;	//Kääntöä varten (TK)
   }
   
   /** 
@@ -129,7 +182,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> intersection(RBTree<E> t) {
-	 return t;	//Kääntöä varten (TK)
+    return t;	//Kääntöä varten (TK)
   }
 
   /** 
@@ -140,7 +193,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */  
   public RBTree<E> difference(RBTree<E> t) {
-	 return t;	//Kääntöä varten (TK)
+    return t;	//Kääntöä varten (TK)
   }
   
   /** 
