@@ -23,7 +23,7 @@ public class RBTree<E extends Comparable<E>> {
     * @return Palauttaa true, jos puu on tyhjä
     */
   public boolean isEmpty() {
-	return true;	//Kääntöä varten (TK)
+	 return true;	//Kääntöä varten (TK)
   }
   
   /**
@@ -41,7 +41,7 @@ public class RBTree<E extends Comparable<E>> {
    * @return puun juuri
    */
   public RBTreeNode<E> getRoot(){
-	return root;	
+	 return root;	
   }
   
    
@@ -52,7 +52,42 @@ public class RBTree<E extends Comparable<E>> {
     * @param data Puuhun lisättävä objekti
     *
     */
-  public void add(E data){
+  public boolean add(E data) {
+    RBTreeNode<E> n = this.getRoot();
+    if (n == null) {
+      RBTreeNode<E> node = new RBTreeNode<E>(data);
+      node.setColor(0);
+      root = node;
+      return true;
+    }
+    while (n != null) {
+      E nE = n.getElement();
+      if (nE.equals(data))
+        return false;
+      else if (nE.compareTo(data) == -1) {
+        if (n.getRightChild() == null) {
+          RBTreeNode<E> node = new RBTreeNode<E>(data);
+          node.setColor(0);
+          n.setRightChild(node);
+          RBTreeAddFixup(node);
+          return true;
+        }
+        else
+          n = n.getRightChild();
+      }
+      else {
+        if (n.getLeftChild() == null) {
+          RBTreeNode<E> node = new RBTreeNode<E>(data);
+          node.setColor(0);
+          n.setLeftChild(node);
+          RBTreeAddFixup(node);
+          return true;
+        }
+        else
+          n = n.getLeftChild();
+      }
+    }
+    return false;
   }
   
   /**
@@ -72,7 +107,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public E search(E data){
-	return data;	//Kääntöä varten (TK)
+	 return data;	//Kääntöä varten (TK)
   }
 
   /** 
@@ -83,7 +118,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> union(RBTree<E> t) {
-	return t;	//Kääntöä varten (TK)
+	 return t;	//Kääntöä varten (TK)
   }
   
   /** 
@@ -94,7 +129,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> intersection(RBTree<E> t) {
-	return t;	//Kääntöä varten (TK)
+	 return t;	//Kääntöä varten (TK)
   }
 
   /** 
@@ -105,7 +140,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */  
   public RBTree<E> difference(RBTree<E> t) {
-	return t;	//Kääntöä varten (TK)
+	 return t;	//Kääntöä varten (TK)
   }
   
   /** 

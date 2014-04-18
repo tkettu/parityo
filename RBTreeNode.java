@@ -3,12 +3,12 @@
   * @author Juhani Seppälä
   * 
   */
-public class RBTreeNode<E extends Comparable<E>> {
+public class RBTreeNode<E> {
   private E element;
   private RBTreeNode<E> parent;
   private RBTreeNode<E> leftChild;
   private RBTreeNode<E> rightChild;
-  private String color;
+  private int color; // 0 = r, 1 = b
 
 
   /**
@@ -17,7 +17,8 @@ public class RBTreeNode<E extends Comparable<E>> {
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public void RBTReeNode(E element){
+  public RBTreeNode(E element){
+    this.element = element;
   }
 
   /**
@@ -26,16 +27,21 @@ public class RBTreeNode<E extends Comparable<E>> {
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public void RBTReeNode(E element,
+  public RBTreeNode(E element,
                         RBTreeNode<E> parent,
                         RBTreeNode<E> leftChild,
                         RBTreeNode<E> rightChild,
-                        String color){
+                        int color){
     this.element = element;
     this.parent = parent;
     this.leftChild = leftChild;
     this.rightChild = rightChild;
     this.color = color;
+  }
+
+  public E getElement() {
+    return element;
+
   }
   
   /**
@@ -104,19 +110,19 @@ public class RBTreeNode<E extends Comparable<E>> {
   
   /**
     * Metodi setColor asettaa parametrina saadun värin tämän solmun väriksi
-    * @param color Solmun väriksi asettava väri ("r|b")
+    * @param color Solmun väriksi asettava väri ("0|1")
     *
     */
-  public void setColor(String color){
+  public void setColor(int color){
     this.color =  color;
   }
   
   /**
     * Metodi getColor palauttaa tarkasteltavan solmun värin
-    * @return Solmun väri ("r|b")
+    * @return Solmun väri ("0|1")
     *
     */
-  public String getColor(){
+  public int getColor(){
     return color;
   }
   
