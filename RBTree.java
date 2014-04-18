@@ -66,7 +66,7 @@ public class RBTree<E extends Comparable<E>> {
     }
     while (n != null) {
       E nE = n.getElement();
-      if (nE.compareTo(data) == 0)
+      if (nE.equals(data))
         return false;
       else if (nE.compareTo(data) < 0) {
         if (n.getRightChild() == null) {
