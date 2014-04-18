@@ -52,7 +52,7 @@ public class RBTree<E extends Comparable<E>> {
     * sen puuhun ja kutsuu solmulle tasapainotusmetodia RBTreeAddFixup
     * @author Juhani Seppälä
     * @param data Puuhun lisättävä objekti
-    * @return true, jos lisättiin
+    * @return true, jos lisättiin; muuten false
     *
     */
   public boolean add(E data) {
