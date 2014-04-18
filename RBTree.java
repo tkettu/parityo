@@ -52,6 +52,7 @@ public class RBTree<E extends Comparable<E>> {
     * sen puuhun ja kutsuu solmulle tasapainotusmetodia RBTreeAddFixup
     * @author Juhani Seppälä
     * @param data Puuhun lisättävä objekti
+    * @return true, jos lisättiin
     *
     */
   public boolean add(E data) {
@@ -65,9 +66,9 @@ public class RBTree<E extends Comparable<E>> {
     }
     while (n != null) {
       E nE = n.getElement();
-      if (nE.equals(data))
+      if (nE.compareTo(data) == 0)
         return false;
-      else if (nE.compareTo(data) == -1) {
+      else if (nE.compareTo(data) < 0) {
         if (n.getRightChild() == null) {
           RBTreeNode<E> node = new RBTreeNode<E>(data);
           node.setColor(0);
