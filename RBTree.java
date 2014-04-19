@@ -142,7 +142,7 @@ public class RBTree<E extends Comparable<E>> {
 	if(y.getColor()==1){		//jos y on musta
 	  RBTreeRemoveFixup(x);
 	}
-
+	size--;
 	return true;	
     // Harkitse search() käyttöä alussa? successor() ja min() myös käytettävissä (JS)
   }
@@ -246,7 +246,17 @@ public class RBTree<E extends Comparable<E>> {
   public int size(){
     return size;
   }
+  
+  /** 
+    * Metodi setSize asettaa puun solmujen lukumäärän
+    * @author Tero Kettunen
+    * @param newSize puun solmujen uusi lukumäärä
+    *
+    */
 
+  public void setSize(int newSize){
+    this.size = newSize;
+  }
   /**
     * RBTreeRemoveFixup tarkastaa solmujen värit sekä tasapainottaa puun poisto-operaation tapauksessa
     * kutsuen joko metodia leftRotate tai rightRotate (Cormen, Leiserson, Rivest)
