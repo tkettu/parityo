@@ -101,9 +101,49 @@ public class RBTree<E extends Comparable<E>> {
     * RBTreeRemoveFixup
     * @author Tero Kettunen
     * @param data Puusta poistettava objekti
-    *
+    * @return true, jos data poistettiin; muuten false
     */
-  public void remove(E data){
+  public boolean remove(E data){
+	
+	RBTreeNode<E> rn = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
+	RBTreeNode<E> y;  //apusolmu		
+	RBTreeNode<E> x;  //apusolmu
+	
+	if(rn==null){
+	  return false;
+	}
+	
+	if(rn.getLeftChild()==null || rn.getRightChild()==null){
+	  y = rn;
+	}else{
+	  y = successor(rn);
+	}
+	
+	if(y.getLeftChild() != null){
+	  x = y.getLeftChild();
+	}else{
+	  x = y.getRightChild();
+	}
+	
+	x.setParent(y.getParent());
+	
+	if(y.getParent() == null){
+	  setRoot(x);
+	}else if(y == y.getParent().getLeftChild()){
+	  y.getParent().setLeftChild(x);
+	}else{
+	  y.getParent().setRightChild(x);
+	}
+	
+	if(y != rn){
+	  rn.setElement(y.getElement());
+	}
+	
+	if(y.getColor()==1){		//jos y on musta
+	  RBTreeRemoveFixup(x);
+	}
+
+	return true;	
     // Harkitse search() käyttöä alussa? successor() ja min() myös käytettävissä (JS)
   }
   
