@@ -148,10 +148,10 @@ public class RBTree<E extends Comparable<E>> {
   }
   
   /**
-    * Metodi search etsii ja palauttaa puusta parametrina annetun objektin
+    * Metodi search etsii ja palauttaa puusta etsittävän solmun
     * @author Juhani Seppälä
     * @param data Puusta etsittävä objekti
-    * @return 
+    * @return etsittävä solmu tai null, jos solmua ei löytynyt
     *
     */
   public RBTreeNode<E> search(E data) {
