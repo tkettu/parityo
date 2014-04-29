@@ -31,10 +31,31 @@ public class RBTreeTesti {
 	RBTree<Integer> testipuu = testTree();
 	
 	printTree(testipuu);
+	
+	//Testataan add() ________________________________________
+	
+	System.out.println("\ntestataan add() testipuun datalla:");
+	
+	puu.add(2);
+	puu.add(1);
+	puu.add(11);
+	puu.add(15);
+	puu.add(14);
+	puu.add(7);
+	puu.add(4);
+	puu.add(8);
+	puu.add(5);
+	
+	puu.add(8);
+	
+	
+	printTree(puu);
     
     //Testataan add() satunnaisilla luvuilla
     
-    System.out.println("Lisataan");
+	RBTree<Integer> puu2 = new RBTree<Integer>();
+	
+    System.out.println("\nLisataan");
     for(int i = 0; i<N;i++){
       Integer x = R.nextInt(N);
       System.out.print(x + " ");
@@ -46,6 +67,13 @@ public class RBTreeTesti {
 	
   
     //Testataan remove()
+	
+	int pois = 5;  //TODO tarkista lehdillä ja juurilla
+	System.out.println("\nPoistetaan " + pois);
+	
+	testipuu.remove(pois);
+	
+	printTree(testipuu);
     
     //Testataan search()
     
@@ -97,7 +125,7 @@ public class RBTreeTesti {
     
     RBTreeNode<Integer> oho = oh.getRightChild();
     
-    oho.setLeftChild(new RBTreeNode<Integer>(15,oho,null,null,0));
+    oho.setRightChild(new RBTreeNode<Integer>(15,oho,null,null,0));
     
 	puu.setSize(10);
     return puu;
@@ -114,7 +142,7 @@ public class RBTreeTesti {
       RBTreeNode juuri = puu.getRoot();
        System.out.println();
       System.out.println("Vari (0=red, 1= black) |  elementti");
-      //System.out.println(" /    \\ ");  
+      
       PrintTreeApu(juuri);
     }
   }
