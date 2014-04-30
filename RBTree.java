@@ -311,6 +311,7 @@ public class RBTree<E extends Comparable<E>> {
         node = root;  
       }
     } // while
+    node.setColor(1);
   } // method
 
   /**
