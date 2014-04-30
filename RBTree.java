@@ -43,7 +43,7 @@ public class RBTree<E extends Comparable<E>> {
    * @return puun juuri
    */
   public RBTreeNode<E> getRoot(){
-    return root;	
+    return root;  
   }
   
    
@@ -104,45 +104,45 @@ public class RBTree<E extends Comparable<E>> {
     * @return true, jos data poistettiin; muuten false
     */
   public boolean remove(E data){
-	
-  	RBTreeNode<E> rn = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
-  	RBTreeNode<E> y;  //apusolmu		
-  	RBTreeNode<E> x;  //apusolmu
-  	
-  	if(rn==null)
-  	  return false;
-  	
-  	if (rn.getLeftChild()==null || rn.getRightChild()==null) {
-  	  y = rn;
-  	} else {
-  	  y = successor(rn);
-  	}
-  	
-  	if (y.getLeftChild() != null) {
-  	  x = y.getLeftChild();
-  	} else {
-  	  x = y.getRightChild();
-  	}
-  	
-  	x.setParent(y.getParent());
-  	
-  	if (y.getParent() == null) {
-  	  setRoot(x);
-  	} else if(y == y.getParent().getLeftChild()) {
-  	  y.getParent().setLeftChild(x);
-  	} else {
-  	  y.getParent().setRightChild(x);
-  	}
-  	
-  	if (y != rn) {
-  	  rn.setElement(y.getElement());
-  	}
-  	
-  	if (y.getColor()==1) {		//jos y on musta
-  	  RBTreeRemoveFixup(x);
-  	}
-  	size--;
-  	return true;	
+  
+    RBTreeNode<E> rn = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
+    RBTreeNode<E> y;  //apusolmu    
+    RBTreeNode<E> x;  //apusolmu
+    
+    if(rn==null)
+      return false;
+    
+    if (rn.getLeftChild()==null || rn.getRightChild()==null) {
+      y = rn;
+    } else {
+      y = successor(rn);
+    }
+    
+    if (y.getLeftChild() != null) {
+      x = y.getLeftChild();
+    } else {
+      x = y.getRightChild();
+    }
+    
+    x.setParent(y.getParent());
+    
+    if (y.getParent() == null) {
+      setRoot(x);
+    } else if(y == y.getParent().getLeftChild()) {
+      y.getParent().setLeftChild(x);
+    } else {
+      y.getParent().setRightChild(x);
+    }
+    
+    if (y != rn) {
+      rn.setElement(y.getElement());
+    }
+    
+    if (y.getColor()==1) {    //jos y on musta
+      RBTreeRemoveFixup(x);
+    }
+    size--;
+    return true;  
   }
   
   /**
@@ -210,7 +210,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> union(RBTree<E> t) {
-    return t;	//Kääntöä varten (TK)
+    return t; //Kääntöä varten (TK)
   }
   
   /** 
@@ -221,7 +221,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> intersection(RBTree<E> t) {
-    return t;	//Kääntöä varten (TK)
+    return t; //Kääntöä varten (TK)
   }
 
   /** 
@@ -232,7 +232,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */  
   public RBTree<E> difference(RBTree<E> t) {
-    return t;	//Kääntöä varten (TK)
+    return t; //Kääntöä varten (TK)
   }
   
   /** 
@@ -363,21 +363,21 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   private void leftRotate(RBTreeNode<E> node) {
-  	RBTreeNode<E> y = node.getRightChild();  //otetaan talteen noden oikea lapsi y
-  	node.setRightChild(y.getLeftChild());	// y:n vasen alipuu noden oikeaksi alipuuksi
-  	y.getLeftChild().setParent(node);
-  	y.setParent(node.getParent());			// noden vanhempi y:n vanhemmaksi
-  	
-  	if (node.getParent()==null) {				// Jos node on juuri
-  	  setRoot(y);							
-  	} else if(node==node.getParent().getLeftChild()) { //Jos node on vasen lapsi
-  	  node.getParent().setLeftChild(y);
-  	} else {											//Jos se on oikea lapsi
-  	  node.getParent().setRightChild(y);
-  	}
-  	
-  	y.setLeftChild(node);
-  	node.setParent(y);
+    RBTreeNode<E> y = node.getRightChild();  //otetaan talteen noden oikea lapsi y
+    node.setRightChild(y.getLeftChild()); // y:n vasen alipuu noden oikeaksi alipuuksi
+    y.getLeftChild().setParent(node);
+    y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
+    
+    if (node.getParent()==null) {       // Jos node on juuri
+      setRoot(y);             
+    } else if(node==node.getParent().getLeftChild()) { //Jos node on vasen lapsi
+      node.getParent().setLeftChild(y);
+    } else {                      //Jos se on oikea lapsi
+      node.getParent().setRightChild(y);
+    }
+    
+    y.setLeftChild(node);
+    node.setParent(y);
   }
 
   /**
@@ -388,20 +388,20 @@ public class RBTree<E extends Comparable<E>> {
     */
   private void rightRotate(RBTreeNode<E> node) {
     RBTreeNode<E> y = node.getLeftChild();  //otetaan talteen noden vasen lapsi y
-  	node.setLeftChild(y.getRightChild());	// y:n oikea alipuu noden vasemmaksi alipuuksi
-  	y.getRightChild().setParent(node);
-  	y.setParent(node.getParent());			// noden vanhempi y:n vanhemmaksi
-  	
-  	if (node.getParent()==null) {				// Jos node on juuri
-  	  setRoot(y);							
-  	} else if (node==node.getParent().getRightChild()) { //Jos node on oikea lapsi
-  	  node.getParent().setRightChild(y);
-  	} else {											//Jos se on vasen lapsi
-  	  node.getParent().setLeftChild(y);
-  	}
-  	
-  	y.setRightChild(node);
-  	node.setParent(y);
+    node.setLeftChild(y.getRightChild()); // y:n oikea alipuu noden vasemmaksi alipuuksi
+    y.getRightChild().setParent(node);
+    y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
+    
+    if (node.getParent()==null) {       // Jos node on juuri
+      setRoot(y);             
+    } else if (node==node.getParent().getRightChild()) { //Jos node on oikea lapsi
+      node.getParent().setRightChild(y);
+    } else {                      //Jos se on vasen lapsi
+      node.getParent().setLeftChild(y);
+    }
+    
+    y.setRightChild(node);
+    node.setParent(y);
   }
   
 } // class
