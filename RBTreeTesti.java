@@ -32,6 +32,9 @@ public class RBTreeTesti {
 	
 	printTree(testipuu);
 	
+	if(checkRBTree(testipuu))
+	  System.out.println("Puu on puna-musta!");
+	
 	//Testataan add() ________________________________________
 	
 	System.out.println("\ntestataan add() testipuun datalla:");
@@ -50,6 +53,11 @@ public class RBTreeTesti {
 	
 	
 	printTree(puu);
+	
+	if(checkRBTree(puu))
+	  System.out.println("Puu on puna-musta!");
+	else
+	  System.out.println("Puu ei ole puna-musta!");
     
     //Testataan add() satunnaisilla luvuilla
     
@@ -59,11 +67,16 @@ public class RBTreeTesti {
     for(int i = 0; i<N;i++){
       Integer x = R.nextInt(N);
       System.out.print(x + " ");
-      puu.add(x);
+      puu2.add(x);
     }
 	
 	System.out.println();
-	printTree(puu);
+	printTree(puu2);
+	
+	if(checkRBTree(puu2))
+	  System.out.println("Puu on puna-musta!");
+	else
+	  System.out.println("Puu ei ole puna-musta!");
 	
   
     //Testataan remove()
@@ -132,7 +145,7 @@ public class RBTreeTesti {
     
   }
   
-  
+  // Puun alkioiden tulostus sisäjärjestyksessä
   private static void printTree(RBTree puu){
     
     if(puu.isEmpty()){
@@ -164,5 +177,39 @@ public class RBTreeTesti {
     } 
   }
   
+  // Tarkistetaan, toteuttaako puu puna-mustan vaatimukset
+  // TODO, tarkista riittääkö nämä ehdot!?
+  private static boolean checkRBTree(RBTree puu){
+	if(puu.isEmpty())
+	  return true;
+	
+	RBTreeNode juuri = puu.getRoot();
+	if(juuri.getColor() != 1) //juuri ei musta
+	  return false;
+	  
+	return checkRBTreeApu(juuri); 
+  }
   
+  // Tarkistetaan, jos vanhempi on punainen, onko lapsi musta
+  private static boolean checkRBTreeApu(RBTreeNode node){
+  
+	RBTreeNode vl = node.getLeftChild();
+	RBTreeNode ol = node.getRightChild();
+	
+	if(node.getColor()==0 && vl!=null && ol != null){
+	 
+	  if(vl.getColor()==0 || ol.getColor()==0){
+		return false;
+	  }
+	}
+	
+	if(vl!=null)
+	  checkRBTreeApu(vl);
+	
+	if(ol!=null)
+	  checkRBTreeApu(ol);
+	  
+	return true;
+	
+  }
 }
