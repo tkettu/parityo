@@ -39,7 +39,7 @@ public class RBTree<E extends Comparable<E>> {
   
   /**
    * Metodi getRoot palauttaa puun juuren
-   * @author
+   * @author Tero Kettunen
    * @return puun juuri
    */
   public RBTreeNode<E> getRoot(){
@@ -186,6 +186,40 @@ public class RBTree<E extends Comparable<E>> {
       }
       return n;
     }
+  }
+
+
+/**
+  * Metodi predecessor palauttaa parametrina annetun solmun edeltäjän puussa
+  * @author Juhani Seppälä
+  * @param node solmu jonka edeltäjää etsitään
+  * @return edeltäjäsolmu tai null jollei edeltäjää ole
+  */
+  public RBTreeNode<E> predecessor(RBTreeNode<E> node) {
+    if (node.getLeftChild() != null) {
+      node = node.getLeftChild();
+      while (node.getRightChild() != null) {
+        node = node.getRightChild();
+      }
+      return node;
+    }
+    else {
+      while (node.getParent() != null) {
+        if (node.getParent().getRightChild() != null
+          && node.getParent().getRightChild() == node) {
+          return node.getParent();
+        }
+        else if (node.getParent().getParent() != null
+          && node.getParent().getParent().getRightChild() != null
+          && node.getParent().getParent().getRightChild() == node.getParent()) {
+          return node.getParent().getParent();
+        }
+        else {
+          node = node.getParent();
+        }
+      }
+    }
+    return null;
   }
 
   /**
