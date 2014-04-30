@@ -153,7 +153,7 @@ public class RBTreeTesti {
     }else{
       int n = puu.size();
       RBTreeNode juuri = puu.getRoot();
-       System.out.println();
+      System.out.println("\nJuuri on " + juuri.getElement()); 
       System.out.println("Vari (0=red, 1= black) |  elementti");
       
       PrintTreeApu(juuri);
@@ -191,6 +191,7 @@ public class RBTreeTesti {
   }
   
   // Tarkistetaan, jos vanhempi on punainen, onko lapsi musta
+  // TODO, ei toimi vielä
   private static boolean checkRBTreeApu(RBTreeNode node){
   
 	RBTreeNode vl = node.getLeftChild();
@@ -209,7 +210,7 @@ public class RBTreeTesti {
 	if(ol!=null)
 	  checkRBTreeApu(ol);
 	  
-	return true;
+	return true;	
 	
   }
 }
