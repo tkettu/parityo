@@ -61,6 +61,7 @@ public class RBTree<E extends Comparable<E>> {
       RBTreeNode<E> node = new RBTreeNode<E>(data);
       node.setColor(0);
       root = node;
+	  RBTreeAddFixup(node); //TK 
       size++;
       return true;
     }
@@ -73,6 +74,7 @@ public class RBTree<E extends Comparable<E>> {
           RBTreeNode<E> node = new RBTreeNode<E>(data);
           node.setColor(0);
           n.setRightChild(node);
+		  node.setParent(n);	//TK
           RBTreeAddFixup(node);
           size++;
           return true;
@@ -85,6 +87,7 @@ public class RBTree<E extends Comparable<E>> {
           RBTreeNode<E> node = new RBTreeNode<E>(data);
           node.setColor(0);
           n.setLeftChild(node);
+		  node.setParent(n);	//TK
           RBTreeAddFixup(node);
           size++;
           return true;
