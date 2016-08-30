@@ -1,9 +1,12 @@
 /**
-  * Luokka BRTree
+  * Luokka RBTree on Puna-musta -puun ADT-toteutus
   * @author Tero Kettunen
   * @author Juhani Seppälä
   * 
   */
+import java.util.ArrayList;
+
+
 public class RBTree<E extends Comparable<E>> {
   
   private int size = 0;
@@ -188,7 +191,6 @@ public class RBTree<E extends Comparable<E>> {
     }
   }
 
-
 /**
   * Metodi predecessor palauttaa parametrina annetun solmun edeltäjän puussa
   * @author Juhani Seppälä
@@ -224,7 +226,6 @@ public class RBTree<E extends Comparable<E>> {
 
   /**
     * Metodi min hakee minimiä parametrina annetusta solmusta alkaen
-    * (Cormen, Leiserson, Rivest)
     * @author Juhani Seppälä
     * @param node solmu (tai alipuun juuri), josta alkaen etsitään minimiä
     * @return (ali)puun minimialkio
@@ -237,25 +238,51 @@ public class RBTree<E extends Comparable<E>> {
   }
 
   /** 
-    * Metodi union muodostaa yhdisteen kutsuttavasta ja parametrina saadusta puusta
+    * Metodi union muodostaa uuden yhdisteen kutsuttavasta ja parametrina saadusta puusta
     * @author Juhani Seppälä
     * @param t yhdisteeseen tuleva puu
-    * @return Kahden puun joukko-opillista yhdistettä kuvaava uusi puu
+    * @return Kahden puun joukko-opillista yhdistettä kuvaava tasapainoinen uusi puu
     *
     */
   public RBTree<E> union(RBTree<E> t) {
-    return t; //Kääntöä varten (TK)
+    
+    /* Naiivi versio
+    RBTree<E> unionTree = new RBTree<E>();
+    RBTreeNode<E> n1 = root;
+    RBTreeNode<E> n2 = t.getRoot();
+    n1 = min(n1);
+    n2 = t.min(n2);
+
+    while (n1 != null)
+      unionTree.add(successor(n1));
+
+    while (n2 != null)
+      unionTree.add(t.successor(n2));
+      */
+
+    ArrayList<E> list1 = getOrderedListData();
+    ArrayList<E> list2 = t.getOrderedListData();
+
+    return treeFromList(listUnion(list1, list2));
   }
   
   /** 
     * Metodi intersection muodostaa leikkauksen kutsuttavasta ja parametrina saadusta puusta
     * @author Tero Kettunen
+    * @author Juhani Seppälä
     * @param t leikkaukseen tuleva puu
     * @return Kahden puun joukko-opillista leikkausta kuvaava uusi puu
     *
     */
   public RBTree<E> intersection(RBTree<E> t) {
-    return t; //Kääntöä varten (TK)
+    RBTree<E> newTree = new RBTree<E>();
+
+    if (!isEmpty() && !t.isEmpty()) {
+      ArrayList<E> list1 = getOrderedListData();
+      ArrayList<E> list2 = t.getOrderedListData();
+      newTree = treeFromList(listIntersect(list1, list2));
+    }
+    return newTree;
   }
 
   /** 
@@ -266,7 +293,13 @@ public class RBTree<E extends Comparable<E>> {
     *
     */  
   public RBTree<E> difference(RBTree<E> t) {
-    return t; //Kääntöä varten (TK)
+    if (t.isEmpty())
+      return this;
+    else {
+      ArrayList<E> list1 = getOrderedListData();
+      ArrayList<E> list2 = t.getOrderedListData();
+      return treeFromList(listDifference(list1, list2));
+    }
   }
   
   /** 
@@ -437,6 +470,125 @@ public class RBTree<E extends Comparable<E>> {
     
     y.setRightChild(node);
     node.setParent(y);
+  }
+
+  /**
+    * Metodi getOrderedListData muodostaa ja palauttaa järjestetyn listan puun solmujen datakentistä.
+    * @author Juhani Seppälä
+    *
+    */
+  public ArrayList<E> getOrderedListData() {
+    ArrayList<E> data = new ArrayList<E>(size);
+    RBTreeNode<E> node = root;
+    if (node != null)
+      data = inorderAddBranch(node, data);
+
+    return data;
+  }
+
+    /**
+     * Metodi inorderAddBranch lisää parametrina annetun puun solmujen datakentät sisäjärjestyksessä  parametrina annettuun listaan.
+     * @author Juhani Seppälä
+     *
+     */
+  private ArrayList<E> inorderAddBranch(RBTreeNode<E> node, ArrayList<E> data) {
+    if (node.getLeftChild() != null)
+      inorderAddBranch(node.getLeftChild(), data);
+
+    data.add(node.getElement());
+
+    if (node.getRightChild() != null)
+      inorderAddBranch(node.getRightChild(), data);
+
+    return data;
+  }
+
+  /**
+    * Metodi treeFromList palauttaa kelvollisen RBTreen parametrina annetusta järjestetystä listasta.
+    * @author Juhani Seppälä
+    *
+    */
+  private RBTree<E> treeFromList(ArrayList<E> list) {
+    RBTree<E> tree = new RBTree<E>();
+    root = treeFromListNode(list, 0, list.size() - 1);
+
+    tree.setRoot(root);
+
+    return tree;
+  }
+
+  /**
+    * Metodi treeFromListNode on treeFromList -metodin rekursio, joka rekursion päättyessä tasapainoisen puun juurisolmun
+    * @author Juhani Seppälä
+    */
+  private RBTreeNode<E> treeFromListNode(ArrayList<E> list,  int start, int end) {
+    if (start > end)
+      return null;
+
+    int pivot = (start + end) / 2;
+
+    RBTreeNode<E> node = new RBTreeNode<E>(list.get(pivot));
+    node.setColor(1);
+
+    node.setLeftChild(treeFromListNode(list, start, pivot - 1));
+    node.setRightChild(treeFromListNode(list, pivot + 1, end));
+
+    return node;
+  }
+
+  /**
+    * Metodi listUnion muodostaa ja palauttaa yhdisteen kahdesta parametrina annetusta järjestetystä listasta
+    * @author Juhani Seppälä
+    */
+  private ArrayList<E> listUnion(ArrayList<E> list1, ArrayList<E> list2) {
+    int i = 0, j = 0;
+    ArrayList<E> newList = new ArrayList<E>();
+
+    while (i < list1.size() && j < list2.size()) {
+      if (list1.get(i).compareTo(list2.get(j)) < 0) {
+        i++;
+        if (!newList.get(newList.size() - 1).equals(list1.get(i)))
+          newList.add(list1.get(i));
+      }
+      else {
+        j++;
+        if (!newList.get(newList.size() - 1).equals(list2.get(j)))
+          newList.add(list2.get(j));
+      }
+    }
+    return newList;
+  }
+
+  /**
+    * Metodi listIntersec muodostaa ja palauttaa leikkauksen kahdesta parametrina annetusta järjestetystä listasta
+    * @author Juhani Seppälä
+    */
+  private ArrayList<E> listIntersect(ArrayList<E> list1, ArrayList<E> list2) {
+    int i = 0;
+    ArrayList<E> newList = new ArrayList<E>();
+
+    while (i < list1.size()) {
+      if (list1.get(i).equals(list2.get(i)))
+        newList.add(list1.get(i));
+      i++;
+    }
+    return newList;
+  }
+
+  /**
+    * Metodi listDifference muodostaa ja palauttaa listan, jossa on parametrina annettujen järjestettyjen listojen joukko-opillinen erotus
+    * @author Juhani Seppälä
+    */
+  private ArrayList<E> listDifference(ArrayList<E> list1, ArrayList<E> list2) {
+    int i = 0;
+    ArrayList<E> newList = new ArrayList<E>();
+
+    while (i < list1.size()) {
+      if (!list1.get(i).equals(list2.get(i)))
+        newList.add(list1.get(i));
+      i++;
+    }
+    return newList;
   }
   
 } // class

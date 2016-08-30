@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.ArrayList;
 
 /**
   * Testi ohjelma luokkaa RBTree varten
@@ -7,9 +8,6 @@ import java.util.Random;
   */
  
 public class RBTreeTesti {
-
-  
-
 
   public static void main(String[] args){
   
@@ -51,9 +49,8 @@ public class RBTreeTesti {
 	
 	puu.add(8);
 	
-	
 	printTree(puu);
-	
+
 	if(checkRBTree(puu))
 	  System.out.println("Puu on puna-musta!");
 	else
@@ -89,7 +86,7 @@ public class RBTreeTesti {
 	printTree(testipuu);
     
     //Testataan search()
-    
+
   }
   
   /* Luo laillisen puna-mustan puun

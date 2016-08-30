@@ -10,7 +10,6 @@ public class RBTreeNode<E> {
   private RBTreeNode<E> rightChild;
   private int color; // 0 = r, 1 = b
 
-
   /**
     * Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
     * solmun
@@ -124,6 +123,10 @@ public class RBTreeNode<E> {
     */
   public int getColor(){
     return color;
+  }
+
+  public String toString() {
+    return String.valueOf(element);
   }
   
 }
