@@ -248,24 +248,11 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTree<E> union(RBTree<E> t) {
-    
-    /* Naiivi versio
-    RBTree<E> unionTree = new RBTree<E>();
-    RBTreeNode<E> n1 = root;
-    RBTreeNode<E> n2 = t.getRoot();
-    n1 = min(n1);
-    n2 = t.min(n2);
-
-    while (n1 != null)
-      unionTree.add(successor(n1));
-
-    while (n2 != null)
-      unionTree.add(t.successor(n2));
-      */
+    if (t.isEmpty())
+      return this;
 
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
-
     return treeFromList(listUnion(list1, list2));
   }
   
@@ -298,11 +285,10 @@ public class RBTree<E extends Comparable<E>> {
   public RBTree<E> difference(RBTree<E> t) {
     if (t.isEmpty())
       return this;
-    else {
-      ArrayList<E> list1 = getOrderedListData();
-      ArrayList<E> list2 = t.getOrderedListData();
-      return treeFromList(listDifference(list1, list2));
-    }
+
+    ArrayList<E> list1 = getOrderedListData();
+    ArrayList<E> list2 = t.getOrderedListData();
+    return treeFromList(listDifference(list1, list2));
   }
   
   /** 
@@ -563,33 +549,50 @@ public class RBTree<E extends Comparable<E>> {
   }
 
   /**
-    * Metodi listIntersec muodostaa ja palauttaa leikkauksen kahdesta parametrina annetusta järjestetystä listasta
+    * Metodi listIntersect muodostaa ja palauttaa leikkauksen kahdesta parametrina annetusta järjestetystä listasta
     * @author Juhani Seppälä
     */
   private ArrayList<E> listIntersect(ArrayList<E> list1, ArrayList<E> list2) {
-    int i = 0;
+    int i = 0, j = 0;
     ArrayList<E> newList = new ArrayList<E>();
 
-    while (i < list1.size()) {
-      if (list1.get(i).equals(list2.get(i)))
+    while (i < list1.size() && j < list2.size()) {
+      if (list1.get(i).compareTo(list2.get(j)) < 0)
+        i++;
+      else if (list1.get(i).compareTo(list2.get(j)) > 0)
+        j++;
+      else {
         newList.add(list1.get(i));
-      i++;
+        i++;
+        j++;
+      }
     }
     return newList;
   }
 
   /**
-    * Metodi listDifference muodostaa ja palauttaa listan, jossa on parametrina annettujen järjestettyjen listojen joukko-opillinen erotus
+    * Metodi listDifference muodostaa ja palauttaa listan, jossa on parametrina annettujen järjestettyjen listojen joukko-opillinen erotus (tuhoaa ensimmäisen parametrin)
     * @author Juhani Seppälä
     */
   private ArrayList<E> listDifference(ArrayList<E> list1, ArrayList<E> list2) {
-    int i = 0;
+    int i = 0, j = 0;
+    while (i < list1.size() && j < list2.size()) {
+      if (list1.get(i).compareTo(list2.get(j)) < 0) {
+        i++;
+      }
+      else if (list1.get(i).compareTo(list2.get(j)) > 0) {
+        j++;
+      }
+      else {
+        list1.set(i, null);
+        i++;
+        j++;
+      }
+    }
     ArrayList<E> newList = new ArrayList<E>();
-
-    while (i < list1.size()) {
-      if (!list1.get(i).equals(list2.get(i)))
+    for (i = 0; i < list1.size(); i++) {
+      if (list1.get(i) != null)
         newList.add(list1.get(i));
-      i++;
     }
     return newList;
   }
