@@ -481,11 +481,11 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public ArrayList<E> getOrderedListData() {
-    ArrayList<E> data = new ArrayList<E>(size);
+    ArrayList<E> data = new ArrayList<E>();
     RBTreeNode<E> node = root;
     if (node != null)
       data = inorderAddBranch(node, data);
-
+    
     return data;
   }
 
