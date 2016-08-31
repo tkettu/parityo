@@ -91,35 +91,6 @@ public class RBTree<E extends Comparable<E>> {
     RBTreeAddFixup(x);
     size++;
     return x;
-
-    /*
-    while (!x.getSentinel()) {
-      y = x;
-      if (data.compareTo(x.getElement()) < 0)
-        x = x.getLeftChild();
-      else
-        x = x.getRightChild();
-    }
-    RBTreeNode<E> z = new RBTreeNode<E>(data);
-    z.setParent(y);
-    if (y.getSentinel()) {
-      root = z;
-      root.setParent(null);
-    } else if (z.getElement().compareTo(y.getElement()) < 0) {
-      y.setLeftChild(z);
-    }
-    else {
-      y.setRightChild(z);
-    }
-    RBTreeNode<E> sentinelLeft = new RBTreeNode<E>(z);
-    RBTreeNode<E> sentinelRight = new RBTreeNode<E>(z);
-    z.setLeftChild(sentinelLeft);
-    z.setRightChild(sentinelRight);
-    z.setColor(0);
-    RBTreeAddFixup(z);
-    size++;
-    return z;
-    */
   }
   
   /**
