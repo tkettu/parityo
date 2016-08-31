@@ -9,6 +9,17 @@ public class RBTreeNode<E> {
   private RBTreeNode<E> leftChild;
   private RBTreeNode<E> rightChild;
   private int color; // 0 = r, 1 = b
+  private boolean sentinel;
+
+  /**
+    * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
+    * @param element Solmun hyötytiedoksi tuleva data
+    *
+    */
+  public RBTreeNode(){
+    sentinel = true;
+    color = 1;
+  }
 
   /**
     * Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
@@ -18,6 +29,7 @@ public class RBTreeNode<E> {
     */
   public RBTreeNode(E element){
     this.element = element;
+    this.sentinel = false;
   }
 
   /**
@@ -36,6 +48,7 @@ public class RBTreeNode<E> {
     this.leftChild = leftChild;
     this.rightChild = rightChild;
     this.color = color;
+    this.sentinel = false;
   }
 
   public E getElement() {
@@ -49,6 +62,11 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getLeftChild(){
+    if (leftChild == null) {
+      RBTreeNode<E> sentinelNode = new RBTreeNode<E>();
+      sentinelNode.setParent(this);
+      this.setLeftChild(sentinelNode);
+    }
     return leftChild;
   }
   
@@ -58,6 +76,11 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getRightChild(){
+    if (rightChild == null) {
+      RBTreeNode<E> sentinelNode= new RBTreeNode<E>();
+      sentinelNode.setParent(this);
+      this.setLeftChild(sentinelNode);
+    }
     return rightChild;
   }
   
@@ -123,6 +146,14 @@ public class RBTreeNode<E> {
     */
   public int getColor(){
     return color;
+  }
+
+  public void setSentinel(boolean sentinel) {
+    this.sentinel = sentinel;
+  }
+
+  public boolean getSentinel() {
+    return sentinel;
   }
 
   public String toString() {

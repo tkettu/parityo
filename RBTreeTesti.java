@@ -1,5 +1,7 @@
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
   * Testi ohjelma luokkaa RBTree varten
@@ -29,9 +31,19 @@ public class RBTreeTesti {
 	RBTree<Integer> testipuu = testTree();
 	
 	printTree(testipuu);
+ //     BTreePrinter.printNode(testipuu.getRoot());
 	
 	if(checkRBTree(testipuu))
 	  System.out.println("Puu on puna-musta!");
+
+      testipuu.add(20);
+      testipuu.add(6);
+
+      if(checkRBTree(testipuu))
+        System.out.println("Puu on puna-musta!");
+
+        printTree(testipuu);
+ //       BTreePrinter.printNode(testipuu.getRoot());
 	
 	//Testataan add() ________________________________________
 	
@@ -50,6 +62,7 @@ public class RBTreeTesti {
 	puu.add(8);
 	
 	printTree(puu);
+ //     BTreePrinter.printNode(puu.getRoot());
 
 	if(checkRBTree(puu))
 	  System.out.println("Puu on puna-musta!");
@@ -57,7 +70,7 @@ public class RBTreeTesti {
 	  System.out.println("Puu ei ole puna-musta!");
     
     //Testataan add() satunnaisilla luvuilla
-    
+/*    
 	RBTree<Integer> puu2 = new RBTree<Integer>();
 	
     System.out.println("\nLisataan");
@@ -81,12 +94,12 @@ public class RBTreeTesti {
 	int pois = 5;  //TODO tarkista lehdillä ja juurilla
 	System.out.println("\nPoistetaan " + pois);
 	
-	testipuu.remove(pois);
+//	testipuu.remove(pois);
 	
 	printTree(testipuu);
     
     //Testataan search()
-
+*/
   }
   
   /* Luo laillisen puna-mustan puun
@@ -161,7 +174,7 @@ public class RBTreeTesti {
   
     RBTreeNode vl = node.getLeftChild();
     
-    if(vl!=null){
+    if(vl!=null && !vl.getSentinel()){
       PrintTreeApu(vl);
     }
     
@@ -169,7 +182,7 @@ public class RBTreeTesti {
     
     RBTreeNode ol = node.getRightChild();
     
-    if(ol!=null){
+    if(ol!=null && !ol.getSentinel()){
       PrintTreeApu(ol);
     } 
   }
@@ -194,20 +207,112 @@ public class RBTreeTesti {
 	RBTreeNode vl = node.getLeftChild();
 	RBTreeNode ol = node.getRightChild();
 	
-	if(node.getColor()==0 && vl!=null && ol != null){
+	if(node.getColor()==0 && vl!=null && ol != null && !vl.getSentinel() && !ol.getSentinel()){
 	 
 	  if(vl.getColor()==0 || ol.getColor()==0){
 		return false;
 	  }
 	}
 	
-	if(vl!=null)
+	if (vl!=null && !vl.getSentinel())
 	  checkRBTreeApu(vl);
 	
-	if(ol!=null)
+	if (ol!=null && !ol.getSentinel())
 	  checkRBTreeApu(ol);
 	  
 	return true;	
 	
   }
+}
+
+class BTreePrinter {
+
+    public static <E extends Comparable<?>> void printNode(RBTreeNode<E> root) {
+        int maxLevel = BTreePrinter.maxLevel(root);
+
+        printNodeInternal(Collections.singletonList(root), 1, maxLevel);
+    }
+
+    private  static <E extends Comparable<?>> void printNodeInternal(List<RBTreeNode<E>> nodes, int level, int maxLevel) {
+        if (nodes.isEmpty() || BTreePrinter.isAllElementsNull(nodes))
+            return;
+
+        int floor = maxLevel - level;
+        int endgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
+        int firstSpaces = (int) Math.pow(2, (floor)) - 1;
+        int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
+
+        BTreePrinter.printWhitespaces(firstSpaces);
+
+        List<RBTreeNode<E>> newNodes = new ArrayList<RBTreeNode<E>>();
+        for (RBTreeNode<E> node : nodes) {
+            if (node != null && !node.getSentinel()) {
+ //               if (node.getColor() == 0)
+ //                 System.out.print("r:");
+ //               else
+ //                 System.out.print("b:");
+
+                System.out.print(node.getElement());
+
+                newNodes.add(node.getLeftChild());
+                newNodes.add(node.getRightChild());
+            } else {
+                newNodes.add(null);
+                newNodes.add(null);
+                System.out.print(" ");
+            }
+
+            BTreePrinter.printWhitespaces(betweenSpaces);
+        }
+        System.out.println("");
+
+        for (int i = 1; i <= endgeLines; i++) {
+            for (int j = 0; j < nodes.size(); j++) {
+                BTreePrinter.printWhitespaces(firstSpaces - i);
+                if (nodes.get(j) == null) {
+                    BTreePrinter.printWhitespaces(endgeLines + endgeLines + i + 1);
+                    continue;
+                }
+
+                if (nodes.get(j).getLeftChild() != null)
+                    System.out.print("/");
+                else
+                    BTreePrinter.printWhitespaces(1);
+
+                BTreePrinter.printWhitespaces(i + i - 1);
+
+                if (nodes.get(j).getRightChild() != null)
+                    System.out.print("\\");
+                else
+                    BTreePrinter.printWhitespaces(1);
+
+                BTreePrinter.printWhitespaces(endgeLines + endgeLines - i);
+            }
+
+            System.out.println("");
+        }
+
+        printNodeInternal(newNodes, level + 1, maxLevel);
+    }
+
+    private static void printWhitespaces(int count) {
+        for (int i = 0; i < count; i++)
+            System.out.print(" ");
+    }
+
+    private static <E extends Comparable<?>> int maxLevel(RBTreeNode<E> node) {
+        if (node == null || node.getSentinel())
+            return 0;
+
+        return Math.max(BTreePrinter.maxLevel(node.getLeftChild()), BTreePrinter.maxLevel(node.getRightChild())) + 1;
+    }
+
+    private static <E> boolean isAllElementsNull(List<E> list) {
+        for (Object object : list) {
+            if (object != null)
+                return false;
+        }
+
+        return true;
+    }
 }
