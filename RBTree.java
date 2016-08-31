@@ -240,7 +240,9 @@ public class RBTree<E extends Comparable<E>> {
 
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
-    return treeFromList(listUnion(list1, list2));
+    RBTree<E> tree = treeFromList(listUnion(list1, list2));
+    colorBalancedRBTree(tree.getRoot());
+    return tree;
   }
   
   /** 
@@ -258,6 +260,7 @@ public class RBTree<E extends Comparable<E>> {
       ArrayList<E> list1 = getOrderedListData();
       ArrayList<E> list2 = t.getOrderedListData();
       newTree = treeFromList(listIntersect(list1, list2));
+      colorBalancedRBTree(newTree.getRoot());
     }
     return newTree;
   }
@@ -275,7 +278,9 @@ public class RBTree<E extends Comparable<E>> {
 
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
-    return treeFromList(listDifference(list1, list2));
+    RBTree<E> tree = treeFromList(listDifference(list1, list2));
+    colorBalancedRBTree(tree.getRoot());
+    return tree;
   }
   
   /** 
@@ -367,8 +372,6 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   private void RBTreeAddFixup(RBTreeNode<E> node) {
-    System.out.println("AddFixup called with elem: " + node + " p: " + node.getParent());
-
     while (node.getParent() != null &&
            node.getParent().getParent() != null &&
            node.getParent().getColor() == 0) {
@@ -520,13 +523,32 @@ public class RBTree<E extends Comparable<E>> {
     int pivot = (start + end) / 2;
 
     RBTreeNode<E> node = new RBTreeNode<E>(list.get(pivot));
-    node.setColor(0);
 
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
-    node.setColor(1);
 
     return node;
+  }
+
+  private void colorBalancedRBTree(RBTreeNode<E> x) {
+    while (x != null && !x.getSentinel()) {
+      /*
+      if (x.getParent() == null) // root
+        x.setColor(1);
+      else if (x.getParent() != null && x.getParent().getColor() == 1)
+        x.setColor(0);
+      else
+        x.setColor(1);
+        */
+      x.setColor(1);
+      if (x.getLeftChild() != null)
+        colorBalancedRBTree(x.getLeftChild());
+      if (x.getRightChild() != null)
+        colorBalancedRBTree(x.getRightChild());
+      System.out.println("Colored: " + x.getColor());
+      return;
+    }
+    return;
   }
 
   /**
