@@ -59,103 +59,65 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTreeNode<E> add(E data) {
-    
-    RBTreeNode<E> n = root;
-    if (n == null) {
-      RBTreeNode<E> node = new RBTreeNode<E>(data);
-      node.setColor(0);
-      root = node;
-	RBTreeAddFixup(node); //TK 
-      size++;
-      return node;
-    }
-    while (n != null && !n.getSentinel()) {
-      E nE = n.getElement();
-      if (nE.equals(data))
-        return null;
-      else if (nE.compareTo(data) < 0) {
-        if (n.getRightChild() == null) {
-          RBTreeNode<E> node = new RBTreeNode<E>(data);
-          node.setColor(0);
-          n.setRightChild(node);
-          node.setParent(n);	//TK
-          RBTreeAddFixup(node);
-          size++;
-          return node;
-        }
-        else
-          n = n.getRightChild();
-      }
-      else {
-        if (n.getLeftChild() == null) {
-          RBTreeNode<E> node = new RBTreeNode<E>(data);
-          node.setColor(0);
-          n.setLeftChild(node);
-          node.setParent(n);	//TK
-          RBTreeAddFixup(node);
-          size++;
-          return node;
-        }
-        else
-          n = n.getLeftChild();
-      }
-    }
-    return null;
-    
-    /*
-    RBTreeNode<E> z = new RBTreeNode<E>(data);
-    RBTreeNode<E> x = getRoot();
+
     RBTreeNode<E> y = null;
-    while (x != null) {
+    RBTreeNode<E> x = root;
+
+    while (x != null && !x.getSentinel()) {
       y = x;
-      if (z.getElement().compareTo(x.getElement()) < 0)
+      if (data.compareTo(y.getElement()) < 0)
+        x = y.getLeftChild();
+      else if (data.compareTo(y.getElement()) > 0)
+        x = y.getRightChild();
+      else
+        return null;
+    }
+    if (y == null){
+      x = new RBTreeNode<E>(data);
+      x.setParent(null);
+      root = x;
+    }
+    else {
+      x.setParent(y);
+      x.setElement(data);
+      x.setSentinel(false);
+      x.setColor(0);
+    }
+    RBTreeNode<E> sentinelLeft = new RBTreeNode<E>(x);
+    RBTreeNode<E> sentinelRight = new RBTreeNode<E>(x);
+    x.setLeftChild(sentinelLeft);
+    x.setRightChild(sentinelRight);
+    x.setColor(0);
+    RBTreeAddFixup(x);
+    size++;
+    return x;
+
+    /*
+    while (!x.getSentinel()) {
+      y = x;
+      if (data.compareTo(x.getElement()) < 0)
         x = x.getLeftChild();
       else
         x = x.getRightChild();
     }
-    if (y = null)
-    if (z.getElement().compareTo(y.getElement()) < 0)
-      y.setLeftChild(z);
-    else
-      y.setRightChild(z);
-
+    RBTreeNode<E> z = new RBTreeNode<E>(data);
     z.setParent(y);
+    if (y.getSentinel()) {
+      root = z;
+      root.setParent(null);
+    } else if (z.getElement().compareTo(y.getElement()) < 0) {
+      y.setLeftChild(z);
+    }
+    else {
+      y.setRightChild(z);
+    }
+    RBTreeNode<E> sentinelLeft = new RBTreeNode<E>(z);
+    RBTreeNode<E> sentinelRight = new RBTreeNode<E>(z);
+    z.setLeftChild(sentinelLeft);
+    z.setRightChild(sentinelRight);
     z.setColor(0);
     RBTreeAddFixup(z);
     size++;
-    return z;
-    */
-
-    /*
-    if (isEmpty()) {
-      RBTreeNode<E> z = new RBTreeNode<E>(data);
-      z.setColor(0);
-      setRoot(z);
-      RBTreeAddFixup(z);
-      return z;
-    }
-
-    RBTreeNode<E> z = getRoot();
-    RBTreeNode<E> parent = null;
-    while (z != null) {
-      parent = z;
-      if (data.compareTo(z.getElement()) < 0)
-        z = z.getLeftChild();
-      else if (data.compareTo(z.getElement()) > 0)
-        z = z.getRightChild();
-      else
-        return null;
-    }
-    if (parent == null) {
-      z = new RBTreeNode<E>(data);
-      setRoot(z);
-    } else {
-      z.setParent(parent);
-      z.setElement(data);
-      z.setColor(0);
-    }
-    z.setColor(0);
-    RBTreeAddFixup(z);
     return z;
     */
   }
@@ -164,6 +126,7 @@ public class RBTree<E extends Comparable<E>> {
     * Metodi remove poistaa parametrina annetun objektin puusta ja kutsuu tasapainotusmetodia
     * RBTreeRemoveFixup
     * @author Tero Kettunen
+    * @author Juhani Seppälä
     * @param data Puusta poistettava objekti
     * @return true, jos data poistettiin; muuten false
     */
@@ -173,38 +136,33 @@ public class RBTree<E extends Comparable<E>> {
     RBTreeNode<E> y;  //apusolmu    
     RBTreeNode<E> x;  //apusolmu
     
-    if(rn==null)
+    if (rn == null)
       return false;
     
-    if (rn.getLeftChild()==null || rn.getRightChild()==null) {
+    if (rn.getLeftChild().getSentinel() || rn.getRightChild().getSentinel())
       y = rn;
-    } else {
+    else
       y = successor(rn);
-    }
     
-    if (y.getLeftChild() != null) {
+    if (y.getLeftChild() != null) 
       x = y.getLeftChild();
-    } else {
+    else
       x = y.getRightChild();
-    }
     
     x.setParent(y.getParent());
     
-    if (y.getParent() == null) {
-      setRoot(x);
-    } else if(y == y.getParent().getLeftChild()) {
+    if (y.getParent() == null)
+      root = x;
+    else if (y == y.getParent().getLeftChild())
       y.getParent().setLeftChild(x);
-    } else {
+    else
       y.getParent().setRightChild(x);
-    }
     
-    if (y != rn) {
+    if (y != rn)
       rn.setElement(y.getElement());
-    }
     
-    if (y.getColor()==1) {    //jos y on musta
+    if (y.getColor() == 1)    //jos y on musta
       RBTreeRemoveFixup(x);
-    }
     size--;
     return true;  
   }
@@ -219,8 +177,8 @@ public class RBTree<E extends Comparable<E>> {
   public RBTreeNode<E> search(E data) {
     if (size == 0)
       return null;
-    RBTreeNode<E> n = this.getRoot();
-    while (n != null) {
+    RBTreeNode<E> n = root;
+    while (n != null && !n.getSentinel()) {
       if (data.compareTo(n.getElement()) == 0)
         return n;
       if (data.compareTo(n.getElement()) < 0)
@@ -240,15 +198,15 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTreeNode<E> successor(RBTreeNode<E> node) {
-    if (node.getRightChild() != null)
+    if (node.getRightChild() != null && !node.getSentinel())
       return min(node.getRightChild());
     else {
-      RBTreeNode<E> n = node.getParent();
-      while (n != null && node == n.getRightChild()) {
-        node = n;
-        n = n.getParent();
+      RBTreeNode<E> succ = node.getParent();
+      while (succ != null && !succ.getSentinel() && node == succ) {
+        node = succ;
+        succ = node.getParent();
       }
-      return n;
+      return succ;
     }
   }
 
@@ -293,7 +251,7 @@ public class RBTree<E extends Comparable<E>> {
     *
     */
   public RBTreeNode<E> min(RBTreeNode<E> node) {
-    while (node.getLeftChild() != null)
+    while (!node.getLeftChild().getSentinel() && !node.getSentinel())
       node = node.getLeftChild();
     return node;
   }
@@ -375,57 +333,59 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param node solmu, joka saattaa rikkoa puun tasapainoa
     */
-  private void RBTreeRemoveFixup(RBTreeNode<E> node) {
-    while (node != root && node.getParent() != null && node.getColor() == 1) {
-      if (node == node.getParent().getLeftChild()) {
-        RBTreeNode<E> w = node.getParent().getRightChild();
-        if (w.getColor() == 0) {
-          w.setColor(1);
-          node.getParent().setColor(0);
-          leftRotate(node.getParent());
-          w = node.getParent().getRightChild();
+  private void RBTreeRemoveFixup(RBTreeNode<E> x) {
+    while (x != root && x.getColor() == 0) {
+        if (x == x.getParent().getLeftChild()) {
+            RBTreeNode<E> w = x.getParent().getRightChild();
+            if (w.getColor() == 0) {
+                w.setColor(1);
+                x.getParent().setColor(0);
+                leftRotate(x.getParent());
+            }
+            if (w.getLeftChild().getColor() == 1 &&
+                w.getRightChild().getColor() == 1) {
+
+                w.setColor(0);
+                x = x.getParent();
+            } else  {
+                if (w.getRightChild().getColor() == 1) {
+                    w.getLeftChild().setColor(1);
+                    w.setColor(0);
+                    rightRotate(w);
+                    w = x.getParent().getRightChild();
+                }
+                w.setColor(x.getParent().getColor());
+                x.getParent().setColor(1);
+                w.getRightChild().setColor(1);
+                leftRotate(x.getParent());
+                x = root;
+            }
+        } else {
+            RBTreeNode<E> w = x.getParent().getLeftChild();
+            if (w.getColor() == 0) {
+                w.setColor(1);
+                x.getParent().setColor(0);
+                rightRotate(x.getParent());
+            }
+            if (w.getRightChild().getColor() == 1 && w.getLeftChild().getColor() == 1) {
+                w.setColor(0);
+                x = x.getParent();
+            } else  {
+                if (w.getLeftChild().getColor() == 1) {
+                    w.getRightChild().setColor(1);
+                    w.setColor(0);
+                    leftRotate(w);
+                    w = x.getParent().getLeftChild();
+                }
+                w.setColor(x.getParent().getColor());
+                x.getParent().setColor(1);
+                w.getLeftChild().setColor(1);
+                rightRotate(x.getParent());
+                x = root;
+            }
         }
-        if (w.getLeftChild().getColor() == 1 && w.getRightChild().getColor() == 1) {
-          w.setColor(0);
-          node = node.getParent();
-        }
-        else if (w.getRightChild().getColor() == 1) {
-          w.getLeftChild().setColor(1);
-          w.setColor(0);
-          rightRotate(w);
-          w = node.getParent().getRightChild();
-        }
-        w.setColor(node.getParent().getColor());
-        node.getParent().setColor(1);
-        w.getRightChild().setColor(1);
-        leftRotate(node);
-        node = root;
-      } else {
-        RBTreeNode<E> w = node.getParent().getLeftChild();
-        if (w.getColor() == 0) {
-          w.setColor(1);
-          node.getParent().setColor(0);
-          leftRotate(node.getParent());
-          w = node.getParent().getLeftChild();
-        }
-        if (w.getRightChild().getColor() == 1 && w.getLeftChild().getColor() == 1) {
-          w.setColor(0);
-          node = node.getParent();
-        }
-        else if (w.getLeftChild().getColor() == 1) {
-          w.getRightChild().setColor(1);
-          w.setColor(0);
-          rightRotate(w);
-          w = node.getParent().getLeftChild();
-        }
-        w.setColor(node.getParent().getColor());
-        node.getParent().setColor(1);
-        w.getLeftChild().setColor(1);
-        leftRotate(node);
-        node = root;  
-      }
     } // while
-    node.setColor(1);
+    x.setColor(1);
   } // method
 
   /**
@@ -435,89 +395,48 @@ public class RBTree<E extends Comparable<E>> {
     * @param node Solmu, johon korjaustoimi kohdistuu
     *
     */
-  private void RBTreeAddFixup(RBTreeNode<E> z) {
-    System.out.println("AddFixup called with elem: " + z + " p: " + z.getParent());
+  private void RBTreeAddFixup(RBTreeNode<E> node) {
+    System.out.println("AddFixup called with elem: " + node + " p: " + node.getParent());
 
-    while (z.getParent() != null && z.getParent().getParent() != null && z.getParent().getColor() == 0) {
-      RBTreeNode<E> y = null;
-      if (z.getParent() == z.getParent().getParent().getLeftChild()) {
-        y = z.getParent().getParent().getRightChild();
-        if (y != null && y.getColor() == 0) {
-          z.getParent().setColor(1);
-          y.setColor(1);
-          z = z.getParent().getParent();
-          z.setColor(0);
-        } else {
-          if (z == z.getParent().getRightChild()) {
-            z = z.getParent();
-            leftRotate(z);
-          }
-          z.getParent().setColor(1);
-          z.getParent().getParent().setColor(0);
-          rightRotate(z.getParent().getParent());
-        }
-      } else {
-        y = z.getParent().getParent().getLeftChild();
-        if (y != null && y.getColor() == 0) {
-          z.getParent().setColor(1);
-          y.setColor(1);
-          z = z.getParent().getParent();
-          z.setColor(0);
-        } else {
-          if (z == z.getParent().getLeftChild()) {
-            z = z.getParent();
-            leftRotate(z);
-          }
-          z.getParent().setColor(1);
-          z.getParent().getParent().setColor(0);
-          System.out.println("rotate: " + z.getParent().getParent());
-          leftRotate(z.getParent().getParent());
-        }
-      }
-    }
-    /*
-    while (node != root && node.getParent() != null
-                                  && node.getParent().getParent() != null
-                                  && node.getParent().getColor() == 0) {
+    while (node.getParent() != null &&
+           node.getParent().getParent() != null &&
+           node.getParent().getColor() == 0) {
 
-      if (node.getParent() == node.getParent().getParent().getLeftChild()) {
-        RBTreeNode<E> y = node.getParent().getParent().getRightChild();
-        if (y.getColor() == 0) {
-          node.getParent().setColor(1);
-          y.setColor(1);
-          node.getParent().getParent().setColor(0);
-          node = node.getParent().getParent();
-        } else {
-          if (node == node.getParent().getRightChild()) {
-            node = node.getParent();
-            leftRotate(node);
-          }
-          node.getParent().setColor(1);
-          node.getParent().getParent().setColor(0);
-          rightRotate(node.getParent().getParent());
+        if (node.getParent() == node.getParent().getParent().getLeftChild()) {
+            RBTreeNode<E> uncle = node.getParent().getParent().getRightChild();
+            if (uncle.getColor() == 0) {
+                node.getParent().setColor(1);
+                uncle.setColor(1);
+                node = node.getParent().getParent();
+                node.setColor(0);
+            } else {
+                if (node == node.getParent().getRightChild()) {
+                    node = node.getParent();
+                    leftRotate(node);
+                }
+                node.getParent().setColor(1);
+                node.getParent().getParent().setColor(0);
+                rightRotate(node.getParent().getParent());
+            }
+        } else if (node.getParent() == node.getParent().getParent().getRightChild()) {
+            RBTreeNode<E> uncle = node.getParent().getParent().getLeftChild();
+            if (uncle.getColor() == 0) {
+                node.getParent().setColor(1);
+                uncle.setColor(1);
+                node = node.getParent().getParent();
+                node.setColor(0);
+            } else {
+                if (node == node.getParent().getLeftChild()) {
+                    node = node.getParent();
+                    rightRotate(node);
+                }
+                node.getParent().setColor(1);
+                node.getParent().getParent().setColor(0);
+                leftRotate(node.getParent().getParent());
+            }
         }
-      } else if (node.getParent() == node.getParent().getParent().getRightChild()){
-        RBTreeNode<E> y = node.getParent().getParent().getLeftChild();
-        if (y != null && y.getColor() == 0) {
-          node.getParent().setColor(1);
-          y.setColor(1);
-          node.getParent().getParent().setColor(0);
-          node = node.getParent().getParent();
-        }
-        else {
-          if (node == node.getParent().getLeftChild()) {
-            node = node.getParent();
-            leftRotate(node);
-          }
-          node.getParent().setColor(1);
-          node.getParent().getParent().setColor(0);
-          rightRotate(node.getParent().getParent());
-        }
-      }
     }
-    */
     root.setColor(1);
-  
   }
 
   /**
@@ -529,17 +448,19 @@ public class RBTree<E extends Comparable<E>> {
   private void leftRotate(RBTreeNode<E> node) {
     RBTreeNode<E> y = node.getRightChild();  //otetaan talteen noden oikea lapsi y
     node.setRightChild(y.getLeftChild()); // y:n vasen alipuu noden oikeaksi alipuuksi
-    y.getLeftChild().setParent(node);
+    if (y.getLeftChild() != null)
+      y.getLeftChild().setParent(node);
+
     y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
     
-    if (node.getParent()==null) {       // Jos node on juuri
+    if (node.getParent() == null) {       // Jos node on juuri
       setRoot(y);             
-    } else if(node==node.getParent().getLeftChild()) { //Jos node on vasen lapsi
-      node.getParent().setLeftChild(y);
-    } else {                      //Jos se on oikea lapsi
-      node.getParent().setRightChild(y);
+    } else {
+      if (node == node.getParent().getLeftChild())
+        node.getParent().setLeftChild(y);
+      else
+        node.getParent().setRightChild(y);
     }
-    
     y.setLeftChild(node);
     node.setParent(y);
   }
@@ -553,15 +474,18 @@ public class RBTree<E extends Comparable<E>> {
   private void rightRotate(RBTreeNode<E> node) {
     RBTreeNode<E> y = node.getLeftChild();  //otetaan talteen noden vasen lapsi y
     node.setLeftChild(y.getRightChild()); // y:n oikea alipuu noden vasemmaksi alipuuksi
-    y.getRightChild().setParent(node);
+    if (y.getLeftChild() != null)
+      y.getLeftChild().setParent(node);
+
     y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
     
-    if (node.getParent()==null) {       // Jos node on juuri
+    if (node.getParent() == null) {       // Jos node on juuri
       setRoot(y);             
-    } else if (node==node.getParent().getRightChild()) { //Jos node on oikea lapsi
-      node.getParent().setRightChild(y);
-    } else {                      //Jos se on vasen lapsi
-      node.getParent().setLeftChild(y);
+    } else {
+      if (node == node.getParent().getLeftChild())
+        node.getParent().setLeftChild(y);
+      else
+        node.getParent().setRightChild(y);
     }
     
     y.setRightChild(node);
@@ -588,12 +512,12 @@ public class RBTree<E extends Comparable<E>> {
      *
      */
   private ArrayList<E> inorderAddBranch(RBTreeNode<E> node, ArrayList<E> data) {
-    if (node.getLeftChild() != null)
+    if (node.getLeftChild() != null && !node.getLeftChild().getSentinel())
       inorderAddBranch(node.getLeftChild(), data);
 
     data.add(node.getElement());
 
-    if (node.getRightChild() != null)
+    if (node.getRightChild() != null && !node.getRightChild().getSentinel())
       inorderAddBranch(node.getRightChild(), data);
 
     return data;

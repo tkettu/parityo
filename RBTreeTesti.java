@@ -36,14 +36,14 @@ public class RBTreeTesti {
 	if(checkRBTree(testipuu))
 	  System.out.println("Puu on puna-musta!");
 
-      testipuu.add(20);
-      testipuu.add(6);
+ //     testipuu.add(20);
+ //     testipuu.add(6);
 
       if(checkRBTree(testipuu))
         System.out.println("Puu on puna-musta!");
 
         printTree(testipuu);
- //       BTreePrinter.printNode(testipuu.getRoot());
+       BTreePrinter.printNode(testipuu.getRoot());
 	
 	//Testataan add() ________________________________________
 	
@@ -62,12 +62,31 @@ public class RBTreeTesti {
 	puu.add(8);
 	
 	printTree(puu);
- //     BTreePrinter.printNode(puu.getRoot());
+      BTreePrinter.printNode(puu.getRoot());
 
 	if(checkRBTree(puu))
 	  System.out.println("Puu on puna-musta!");
 	else
 	  System.out.println("Puu ei ole puna-musta!");
+
+      System.out.println("Poisto: ");
+
+      puu.remove(2);
+      printTree(puu);
+      BTreePrinter.printNode(puu.getRoot());
+      if(checkRBTree(puu))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
+      puu.remove(4);
+      printTree(puu);
+      BTreePrinter.printNode(puu.getRoot());
+      if(checkRBTree(puu))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
     
     //Testataan add() satunnaisilla luvuilla
 /*    

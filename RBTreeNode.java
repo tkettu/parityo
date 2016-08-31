@@ -16,7 +16,8 @@ public class RBTreeNode<E> {
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public RBTreeNode(){
+  public RBTreeNode(RBTreeNode<E> parent){
+    this.parent = parent;
     sentinel = true;
     color = 1;
   }
@@ -62,11 +63,11 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getLeftChild(){
-    if (leftChild == null) {
-      RBTreeNode<E> sentinelNode = new RBTreeNode<E>();
-      sentinelNode.setParent(this);
-      this.setLeftChild(sentinelNode);
-    }
+ //   if (leftChild == null) {
+ //     RBTreeNode<E> sentinelNode = new RBTreeNode<E>();
+ //     sentinelNode.setParent(this);
+ //     this.setLeftChild(sentinelNode);
+ //   }
     return leftChild;
   }
   
@@ -76,11 +77,11 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getRightChild(){
-    if (rightChild == null) {
-      RBTreeNode<E> sentinelNode= new RBTreeNode<E>();
-      sentinelNode.setParent(this);
-      this.setLeftChild(sentinelNode);
-    }
+//    if (rightChild == null) {
+//      RBTreeNode<E> sentinelNode= new RBTreeNode<E>();
+//      sentinelNode.setParent(this);
+//     this.setLeftChild(sentinelNode);
+//    }
     return rightChild;
   }
   
