@@ -54,7 +54,6 @@ public class RBTreeNode<E> {
 
   public E getElement() {
     return element;
-
   }
   
   /**
@@ -63,11 +62,10 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getLeftChild(){
- //   if (leftChild == null) {
- //     RBTreeNode<E> sentinelNode = new RBTreeNode<E>();
- //     sentinelNode.setParent(this);
- //     this.setLeftChild(sentinelNode);
- //   }
+    if (leftChild == null) {
+      RBTreeNode<E> sentinelNode = new RBTreeNode<E>(this);
+      leftChild = sentinelNode;
+    }
     return leftChild;
   }
   
@@ -77,11 +75,10 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getRightChild(){
-//    if (rightChild == null) {
-//      RBTreeNode<E> sentinelNode= new RBTreeNode<E>();
-//      sentinelNode.setParent(this);
-//     this.setLeftChild(sentinelNode);
-//    }
+    if (rightChild == null) {
+      RBTreeNode<E> sentinelNode= new RBTreeNode<E>(this);
+      rightChild = sentinelNode;
+    }
     return rightChild;
   }
   
@@ -161,4 +158,4 @@ public class RBTreeNode<E> {
     return String.valueOf(element);
   }
   
-}
+} // class

@@ -504,6 +504,7 @@ public class RBTree<E extends Comparable<E>> {
     root = treeFromListNode(list, 0, list.size() - 1);
 
     tree.setRoot(root);
+    tree.setSize(list.size());
 
     return tree;
   }
@@ -519,10 +520,11 @@ public class RBTree<E extends Comparable<E>> {
     int pivot = (start + end) / 2;
 
     RBTreeNode<E> node = new RBTreeNode<E>(list.get(pivot));
-    node.setColor(1);
+    node.setColor(0);
 
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
+    node.setColor(1);
 
     return node;
   }
@@ -537,14 +539,13 @@ public class RBTree<E extends Comparable<E>> {
 
     while (i < list1.size() && j < list2.size()) {
       if (list1.get(i).compareTo(list2.get(j)) < 0) {
-        i++;
-        if (!newList.get(newList.size() - 1).equals(list1.get(i)))
+        if (newList.size() == 0 || !newList.get(newList.size() - 1).equals(list1.get(i)))
           newList.add(list1.get(i));
-      }
-      else {
-        j++;
-        if (!newList.get(newList.size() - 1).equals(list2.get(j)))
+        i++;
+      } else {
+        if (newList.size() == 0 || !newList.get(newList.size() - 1).equals(list2.get(j)))
           newList.add(list2.get(j));
+        j++;
       }
     }
     return newList;

@@ -87,6 +87,60 @@ public class RBTreeTesti {
       else
         System.out.println("Puu ei ole puna-musta!");
 
+      System.out.println("Union: ");
+      RBTree<Integer> puu11 = new RBTree<Integer>();
+      puu11.add(2);
+      puu11.add(1);
+      puu11.add(11);
+      puu11.add(15);
+      puu11.add(14);
+      puu11.add(7);
+      puu11.add(4);
+      puu11.add(8);
+      puu11.add(5);
+
+      RBTree<Integer> puu12 = new RBTree<Integer>();
+      puu12.add(6);
+      puu12.add(3);
+      puu12.add(2);
+      puu12.add(50);
+      puu12.add(22);
+      puu12.add(1);
+      puu12.add(16);
+      puu12.add(7);
+      puu12.add(30);
+
+      RBTree<Integer> union = puu11.union(puu12);
+      printTree(union);
+      BTreePrinter.printNode(union.getRoot());
+      if(checkRBTree(union))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
+      union.add(31);
+      printTree(union);
+      BTreePrinter.printNode(union.getRoot());
+      if(checkRBTree(union))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
+      RBTree<Integer> intersect = puu11.intersection(puu12);
+      printTree(intersect);
+      BTreePrinter.printNode(intersect.getRoot());
+      if(checkRBTree(intersect))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
+      intersect.add(30);
+      printTree(intersect);
+      BTreePrinter.printNode(intersect.getRoot());
+      if(checkRBTree(intersect))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
     
     //Testataan add() satunnaisilla luvuilla
 /*    
