@@ -13,12 +13,11 @@ public class RBTreeNode<E> {
 
   /**
     * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
-    * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public RBTreeNode(RBTreeNode<E> parent){
-    this.parent = parent;
+  public RBTreeNode(){
     sentinel = true;
+    parent = leftChild = rightChild = null;
     color = 1;
   }
 
@@ -62,10 +61,10 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getLeftChild(){
-    if (leftChild == null) {
-      RBTreeNode<E> sentinelNode = new RBTreeNode<E>(this);
-      leftChild = sentinelNode;
-    }
+  //  if (leftChild == null) {
+  //    RBTreeNode<E> sentinelNode = new RBTreeNode<E>(this);
+  //    leftChild = sentinelNode;
+  //  }
     return leftChild;
   }
   
@@ -75,10 +74,10 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getRightChild(){
-    if (rightChild == null) {
-      RBTreeNode<E> sentinelNode= new RBTreeNode<E>(this);
-      rightChild = sentinelNode;
-    }
+ //   if (rightChild == null) {
+ //     RBTreeNode<E> sentinelNode= new RBTreeNode<E>(this);
+ //     rightChild = sentinelNode;
+ //   }
     return rightChild;
   }
   

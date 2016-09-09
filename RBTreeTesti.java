@@ -2,6 +2,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
 
 /**
   * Testi ohjelma luokkaa RBTree varten
@@ -35,12 +36,8 @@ public class RBTreeTesti {
 	
 	if(checkRBTree(testipuu))
 	  System.out.println("Puu on puna-musta!");
-
- //     testipuu.add(20);
- //     testipuu.add(6);
-
-      if(checkRBTree(testipuu))
-        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
 
         printTree(testipuu);
        BTreePrinter.printNode(testipuu.getRoot());
@@ -143,16 +140,40 @@ public class RBTreeTesti {
         System.out.println("Puu ei ole puna-musta!");
     
     //Testataan add() satunnaisilla luvuilla
-/*    
-	RBTree<Integer> puu2 = new RBTree<Integer>();
+
+    RBTree<Integer> puu2 = new RBTree<Integer>();
 	
     System.out.println("\nLisataan");
-    for(int i = 0; i<N;i++){
-      Integer x = R.nextInt(N);
+    for (int i = 0; i<N;i++){
+      Integer x = R.nextInt(2*N);
       System.out.print(x + " ");
       puu2.add(x);
     }
+
+      if(checkRBTree(puu2))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");   
+
+      printTree(puu2);
+      BTreePrinter.printNode(puu2.getRoot());
+
+      System.out.println("\nPoistetaan");
+      for (int i = 0; i < N / 2; i++){
+        Integer x = R.nextInt(2*N);
+        System.out.print(x + " ");
+        puu2.remove(x);
+      }
+
+      if(checkRBTree(puu2))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");   
+
+      printTree(puu2);
+      BTreePrinter.printNode(puu2.getRoot());
 	
+  /*
 	System.out.println();
 	printTree(puu2);
 	
@@ -259,41 +280,83 @@ public class RBTreeTesti {
       PrintTreeApu(ol);
     } 
   }
-  
-  // Tarkistetaan, toteuttaako puu puna-mustan vaatimukset
-  // TODO, tarkista riittääkö nämä ehdot!?
-  private static boolean checkRBTree(RBTree puu){
-	if(puu.isEmpty())
-	  return true;
-	
-	RBTreeNode juuri = puu.getRoot();
-	if(juuri.getColor() != 1) //juuri ei musta
-	  return false;
-	  
-	return checkRBTreeApu(juuri); 
+
+  /*
+    Metodi minHeight laskee ja palauttaa lyhimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
+  */
+  private static int minHeight(RBTreeNode node) {
+    if (node == null || node.getSentinel())
+      return 0;
+    return 1 + Math.min(minHeight(node.getLeftChild()), minHeight(node.getRightChild()));
+  }
+
+  /*
+    Metodi maxHeight laskee ja palauttaa pisimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
+  */
+  private static int maxHeight(RBTreeNode node) {
+    if (node == null || node.getSentinel())
+      return 0;
+    return 1 + Math.max(maxHeight(node.getLeftChild()), maxHeight(node.getRightChild()));
   }
   
-  // Tarkistetaan, jos vanhempi on punainen, onko lapsi musta
-  // TODO, ei toimi vielä
-  private static boolean checkRBTreeApu(RBTreeNode node){
+  /*
+    Tarkistetaan, toteuttaako puu puna-mustan puun vaatimukset:
+      1) Solmu on joko musta tai punainen
+      2) Juuri on musta
+      3) Sentinel-solmut (lehdet) mustia
+      4) Jos solmu on punainen, kummatkin lapset mustia
+      5) Jokaiselle solmulle: kaikki yksinkertaiset polut solmusta lehtiin sisältävät yhtä monta mustaa solmua (solmua itseään ei lasketa, sentinel lasketaan)
+  */
+  private static boolean checkRBTree(RBTree puu){
+    if(puu.isEmpty())
+      return true;
+
+    RBTreeNode juuri = puu.getRoot();
+
+    /*
+     * Ominaisuus 2
+     */
+    if(juuri.getColor() != 1)
+      return false;
+
+    /*
+     * Ominaisuus 5 (tasapainoisuus)
+     */
+    if (maxHeight(juuri) > minHeight(juuri) * 2)
+      return false;
+
+    return checkRBTreeApu(juuri);
+
+  }
   
-	RBTreeNode vl = node.getLeftChild();
-	RBTreeNode ol = node.getRightChild();
-	
-	if(node.getColor()==0 && vl!=null && ol != null && !vl.getSentinel() && !ol.getSentinel()){
-	 
-	  if(vl.getColor()==0 || ol.getColor()==0){
-		return false;
-	  }
-	}
-	
-	if (vl!=null && !vl.getSentinel())
-	  checkRBTreeApu(vl);
-	
-	if (ol!=null && !ol.getSentinel())
-	  checkRBTreeApu(ol);
-	  
-	return true;	
+  /*
+   * CheckRBTree rekursio. Ominaisuuksien 3 ja 4 tarkistus.
+   */
+  private static boolean checkRBTreeApu(RBTreeNode node) {
+
+    /*
+     * Ominaisuus 3
+     */
+    if (node.getSentinel() && node.getColor() != 1) 
+      return false;
+
+    /*
+     * Ominaisuus 4
+     */
+    if (node.getColor() == 0) {
+      if (node.getLeftChild() != null && node.getLeftChild().getColor() == 0)
+        return false;
+      if (node.getRightChild() != null && node.getRightChild().getColor() == 0)
+        return false;
+    }
+
+    if (node.getLeftChild() != null && !checkRBTreeApu(node.getLeftChild()))
+      return false;
+
+    if (node.getRightChild() != null && !checkRBTreeApu(node.getRightChild()))
+      return false;
+
+    return true; 
 	
   }
 }
@@ -320,10 +383,10 @@ class BTreePrinter {
         List<RBTreeNode<E>> newNodes = new ArrayList<RBTreeNode<E>>();
         for (RBTreeNode<E> node : nodes) {
             if (node != null && !node.getSentinel()) {
- //               if (node.getColor() == 0)
- //                 System.out.print("r:");
- //               else
- //                 System.out.print("b:");
+                if (node.getColor() == 0)
+                  System.out.print("r");
+                else
+                  System.out.print("b");
 
                 System.out.print(node.getElement());
 
@@ -347,14 +410,14 @@ class BTreePrinter {
                     continue;
                 }
 
-                if (nodes.get(j).getLeftChild() != null)
+                if (nodes.get(j).getLeftChild() != null && !nodes.get(j).getLeftChild().getSentinel())
                     System.out.print("/");
                 else
                     BTreePrinter.printWhitespaces(1);
 
                 BTreePrinter.printWhitespaces(i + i - 1);
 
-                if (nodes.get(j).getRightChild() != null)
+                if (nodes.get(j).getRightChild() != null && !nodes.get(j).getRightChild().getSentinel())
                     System.out.print("\\");
                 else
                     BTreePrinter.printWhitespaces(1);
