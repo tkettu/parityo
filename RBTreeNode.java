@@ -110,6 +110,8 @@ public class RBTreeNode<E> {
     */
   public void setLeftChild(RBTreeNode<E> node) {
     leftChild = node;
+    if (node != null)
+      node.setParent(this);
   }
   
   /**
@@ -120,6 +122,8 @@ public class RBTreeNode<E> {
     */
   public void setRightChild(RBTreeNode<E> node) {
     rightChild = node;
+    if (node != null)
+      node.setParent(this);
   }
   
   /**

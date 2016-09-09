@@ -12,7 +12,6 @@ public class RBTree<E extends Comparable<E>> {
   private int size = 0;
   private RBTreeNode<E> root;
   
-
   /**
     * Luokan BRTree konstruktori luo uuden tyhjän puun
     *
@@ -399,7 +398,9 @@ public class RBTree<E extends Comparable<E>> {
 
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
-    return treeFromList(listUnion(list1, list2));
+    RBTree<E> tree = treeFromList(listUnion(list1, list2));
+    colorBalancedRBTree(tree.getRoot());
+    return tree;
   }
   
   /** 
@@ -417,6 +418,7 @@ public class RBTree<E extends Comparable<E>> {
       ArrayList<E> list1 = getOrderedListData();
       ArrayList<E> list2 = t.getOrderedListData();
       newTree = treeFromList(listIntersect(list1, list2));
+      colorBalancedRBTree(newTree.getRoot());
     }
     return newTree;
   }
@@ -434,7 +436,9 @@ public class RBTree<E extends Comparable<E>> {
 
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
-    return treeFromList(listDifference(list1, list2));
+    RBTree<E> tree = treeFromList(listDifference(list1, list2));
+    colorBalancedRBTree(tree.getRoot());
+    return tree;
   }
   
   /** 
@@ -535,7 +539,6 @@ public class RBTree<E extends Comparable<E>> {
       RBTreeNode<E> sentinel = new RBTreeNode<E>(node);
       node.setRightChild(sentinel);
     }
-
     return node;
   }
 

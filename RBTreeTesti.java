@@ -59,7 +59,15 @@ public class RBTreeTesti {
 	puu.add(8);
 	puu.add(5);
 	
-	puu.add(8);
+	puu.add(-1);
+      puu.add(-10);
+      puu.add(-100);
+      puu.add(-5);
+      puu.add(9);
+      puu.add(100);
+      puu.add(99);
+
+
 	
 	printTree(puu);
       BTreePrinter.printNode(puu.getRoot());
@@ -141,9 +149,35 @@ public class RBTreeTesti {
         System.out.println("Puu on puna-musta!");
       else
         System.out.println("Puu ei ole puna-musta!");
-   */
-    RBTree<Integer> puu2 = new RBTree<Integer>();
   
+    RBTree<Integer> puu2 = new RBTree<Integer>();
+      
+      intersect.add(11);
+      intersect.add(12);
+      intersect.add(31);
+      intersect.add(32);
+      intersect.add(0);
+      intersect.add(4);
+      intersect.add(-5);
+      intersect.add(-1);
+      intersect.add(15);
+      intersect.add(100);
+      intersect.add(-3);
+
+
+      printTree(intersect);
+      BTreePrinter.printNode(intersect.getRoot());
+      if(checkRBTree(intersect))
+        System.out.println("Puu on puna-musta!");
+      else
+        System.out.println("Puu ei ole puna-musta!");
+
+    //Testataan add() satunnaisilla luvuilla
+    */
+    
+
+    RBTree<Integer> puu2 = new RBTree<Integer>();
+	
     System.out.println("\nLisataan");
     for (int i = 0; i<N;i++){
       Integer x = R.nextInt(2*N);
@@ -402,14 +436,14 @@ class BTreePrinter {
                     continue;
                 }
 
-                if (nodes.get(j).getLeftChild() != null)
+                if (nodes.get(j).getLeftChild() != null && !nodes.get(j).getLeftChild().getSentinel())
                     System.out.print("/");
                 else
                     BTreePrinter.printWhitespaces(1);
 
                 BTreePrinter.printWhitespaces(i + i - 1);
 
-                if (nodes.get(j).getRightChild() != null)
+                if (nodes.get(j).getRightChild() != null && !nodes.get(j).getRightChild().getSentinel())
                     System.out.print("\\");
                 else
                     BTreePrinter.printWhitespaces(1);
