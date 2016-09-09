@@ -62,35 +62,81 @@ public class RBTree<E extends Comparable<E>> {
 
     RBTreeNode<E> y = null;
     RBTreeNode<E> x = root;
+    RBTreeNode<E> z = new RBTreeNode<E>(data);
 
     while (x != null && !x.getSentinel()) {
       y = x;
-      if (data.compareTo(y.getElement()) < 0)
+      if (z.getElement().compareTo(y.getElement()) < 0)
         x = y.getLeftChild();
-      else if (data.compareTo(y.getElement()) > 0)
+      else if (z.getElement().compareTo(y.getElement()) > 0)
         x = y.getRightChild();
       else
         return null;
     }
-    if (y == null){
-      x = new RBTreeNode<E>(data);
-      x.setParent(null);
-      root = x;
-    }
+    z.setParent(y);
+    if (y == null)
+      setRoot(z);
     else {
-      x.setParent(y);
-      x.setElement(data);
-      x.setSentinel(false);
-      x.setColor(0);
+      if (z.getElement().compareTo(y.getElement()) < 0)
+        y.setLeftChild(z);
+      else
+        y.setRightChild(z);
     }
-    RBTreeNode<E> sentinelLeft = new RBTreeNode<E>(x);
-    RBTreeNode<E> sentinelRight = new RBTreeNode<E>(x);
-    x.setLeftChild(sentinelLeft);
-    x.setRightChild(sentinelRight);
-    x.setColor(0);
-    RBTreeAddFixup(x);
+    z.setColor(0);
+    z.setLeftChild(new RBTreeNode<E>(z));
+    z.setRightChild(new RBTreeNode<E>(z));
     size++;
-    return x;
+    addFixup(z);
+    return z;
+  }
+
+  /**
+  * Metodi RBTreeAddFixup tarkastaa solmujen värit sekä tasapainottaa puun lisäysoperaation tapauksessa
+  * kutsuen kääntöoperaatioiden metodeja leftRotate sekä rightRotate (Cormen, Leiserson, Rivest)
+  * @author Juhani Seppälä
+  * @param node Solmu, johon korjaustoimi kohdistuu
+  *
+  */
+  private void addFixup(RBTreeNode<E> z) {
+ //   System.out.println("AddFixup called with elem: " + z + " p: " + z.getParent());
+
+    while (z.getParent() != null && z.getParent().getParent() != null && z.getParent().getColor() == 0) {
+
+      if (z.getParent() == z.getParent().getParent().getLeftChild()) {
+        RBTreeNode<E> y = z.getParent().getParent().getRightChild();
+        if (y.getColor() == 0) {
+          z.getParent().setColor(1);
+          y.setColor(1);
+          z.getParent().getParent().setColor(0);
+          z = z.getParent().getParent();
+        } else {
+          if (z == z.getParent().getRightChild()) {
+            z = z.getParent();
+            leftRotate(z);
+          }
+          z.getParent().setColor(1);
+          z.getParent().getParent().setColor(0);
+          rightRotate(z.getParent().getParent());
+        }
+      } else {
+        RBTreeNode<E> y = z.getParent().getParent().getLeftChild();
+        if (y.getColor() == 0) {
+          z.getParent().setColor(1);
+          y.setColor(1);
+          z.getParent().getParent().setColor(0);
+          z = z.getParent().getParent();
+        } else {
+          if (z == z.getParent().getLeftChild()) {
+              z = z.getParent();
+              rightRotate(z);
+          }
+          z.getParent().setColor(1);
+          z.getParent().getParent().setColor(0);
+          leftRotate(z.getParent().getParent());
+        }
+      }
+    }
+    root.setColor(1);
   }
   
   /**
@@ -101,21 +147,21 @@ public class RBTree<E extends Comparable<E>> {
     * @param data Puusta poistettava objekti
     * @return true, jos data poistettiin; muuten false
     */
-  public boolean remove(E data){
+  public RBTreeNode<E> remove(E data){
   
-    RBTreeNode<E> rn = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
+    RBTreeNode<E> z = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
     RBTreeNode<E> y;  //apusolmu    
     RBTreeNode<E> x;  //apusolmu
     
-    if (rn == null)
-      return false;
+    if (z == null)
+      return null;
     
-    if (rn.getLeftChild().getSentinel() || rn.getRightChild().getSentinel())
-      y = rn;
+    if (z.getLeftChild().getSentinel() || z.getRightChild().getSentinel())
+      y = z;
     else
-      y = successor(rn);
+      y = successor(z);
     
-    if (y.getLeftChild() != null) 
+    if (y.getLeftChild() != null && !y.getLeftChild().getSentinel()) 
       x = y.getLeftChild();
     else
       x = y.getRightChild();
@@ -123,21 +169,134 @@ public class RBTree<E extends Comparable<E>> {
     x.setParent(y.getParent());
     
     if (y.getParent() == null)
-      root = x;
-    else if (y == y.getParent().getLeftChild())
-      y.getParent().setLeftChild(x);
-    else
-      y.getParent().setRightChild(x);
-    
-    if (y != rn)
-      rn.setElement(y.getElement());
-    
-    if (y.getColor() == 1)    //jos y on musta
-      RBTreeRemoveFixup(x);
-    size--;
-    return true;  
+      setRoot(x);
+    else {
+      if (y == y.getParent().getLeftChild())
+        y.getParent().setLeftChild(x);
+      else
+        y.getParent().setRightChild(x);
+    }
+    if (y != z)
+      z.setElement(y.getElement());
+    if (y.getColor() == 1)
+      removeFixup(x);
+    return y;
   }
-  
+
+  /**
+    * RBTreeRemoveFixup tarkastaa solmujen värit sekä tasapainottaa puun poisto-operaation tapauksessa
+    * kutsuen kääntöoperaatioiden metodeja leftRotate sekä rightRotate (Cormen, Leiserson, Rivest)
+    * @author Juhani Seppälä
+    * @param node solmu, joka saattaa rikkoa puun tasapainoa
+    */
+  private void removeFixup(RBTreeNode<E> x) {
+    while (x != root && x.getColor() == 1) {
+        if (x == x.getParent().getLeftChild()) {
+            RBTreeNode<E> w = x.getParent().getRightChild();
+            if (w.getColor() == 0) {
+                w.setColor(1);
+                x.getParent().setColor(0);
+                leftRotate(x.getParent());
+            }
+            if (w.getLeftChild().getColor() == 1 &&
+                w.getRightChild().getColor() == 1) {
+
+                w.setColor(0);
+                x = x.getParent();
+            } else  {
+                if (w.getRightChild().getColor() == 1) {
+                    w.getLeftChild().setColor(1);
+                    w.setColor(0);
+                    rightRotate(w);
+                    w = x.getParent().getRightChild();
+                }
+                w.setColor(x.getParent().getColor());
+                x.getParent().setColor(1);
+                w.getRightChild().setColor(1);
+                leftRotate(x.getParent());
+                x = root;
+            }
+        } else {
+            RBTreeNode<E> w = x.getParent().getLeftChild();
+            if (w.getColor() == 0) {
+                w.setColor(1);
+                x.getParent().setColor(0);
+                rightRotate(x.getParent());
+            }
+            if (w.getRightChild().getColor() == 1 && w.getLeftChild().getColor() == 1) {
+                w.setColor(0);
+                x = x.getParent();
+            } else  {
+                if (w.getLeftChild().getColor() == 1) {
+                    w.getRightChild().setColor(1);
+                    w.setColor(0);
+                    leftRotate(w);
+                    w = x.getParent().getLeftChild();
+                }
+                w.setColor(x.getParent().getColor());
+                x.getParent().setColor(1);
+                w.getLeftChild().setColor(1);
+                rightRotate(x.getParent());
+                x = root;
+            }
+        }
+    } // while
+    x.setColor(1);
+  } // method
+
+
+  /**
+    * Metodi leftRotate suorittaa parametrina annetun solmun perusteella puulle vasemman käännön
+    * @author Tero Kettunen
+    * @param node Solmu, josta alkaen vasen kääntö suoritetaan
+    *
+    */
+  private void leftRotate(RBTreeNode<E> x) {
+    RBTreeNode<E> y = x.getRightChild();  //otetaan talteen noden oikea lapsi y
+    x.setRightChild(y.getLeftChild()); // y:n vasen alipuu noden oikeaksi alipuuksi
+    if (y.getLeftChild() != null)
+      y.getLeftChild().setParent(x);
+
+    y.setParent(x.getParent());      // noden vanhempi y:n vanhemmaksi
+    
+    if (x.getParent() == null) {       // Jos node on juuri
+      setRoot(y);         
+    } else {
+      if (x == x.getParent().getLeftChild())
+        x.getParent().setLeftChild(y);
+      else
+        x.getParent().setRightChild(y);
+    }
+    y.setLeftChild(x);
+    x.setParent(y);
+  }
+
+  /**
+    * Metodi rightRotate suorittaa parametrina annetun solmun perusteella puulle oikean käännön
+    * @author Tero Kettunen
+    * @param node Solmu, josta alkaen oikea kääntö suoritetaan
+    *
+    */
+  private void rightRotate(RBTreeNode<E> x) {
+    RBTreeNode<E> y = x.getLeftChild();  //otetaan talteen noden vasen lapsi y
+    x.setLeftChild(y.getRightChild()); // y:n oikea alipuu noden vasemmaksi alipuuksi
+    if (y.getRightChild() != null)
+      y.getRightChild().setParent(x);
+
+    y.setParent(x.getParent());      // noden vanhempi y:n vanhemmaksi
+    
+    if (x.getParent() == null) {       // Jos node on juuri
+      setRoot(y);             
+    } else {
+      if (x == x.getParent().getLeftChild())
+        x.getParent().setLeftChild(y);
+      else
+        x.getParent().setRightChild(y);
+    }
+    y.setRightChild(x);
+    x.setParent(y);
+  }
+
   /**
     * Metodi search etsii ja palauttaa puusta etsittävän solmun
     * @author Juhani Seppälä
@@ -298,170 +457,6 @@ public class RBTree<E extends Comparable<E>> {
   public void setSize(int newSize){
     this.size = newSize;
   }
-  /**
-    * RBTreeRemoveFixup tarkastaa solmujen värit sekä tasapainottaa puun poisto-operaation tapauksessa
-    * kutsuen kääntöoperaatioiden metodeja leftRotate sekä rightRotate (Cormen, Leiserson, Rivest)
-    * @author Juhani Seppälä
-    * @param node solmu, joka saattaa rikkoa puun tasapainoa
-    */
-  private void RBTreeRemoveFixup(RBTreeNode<E> x) {
-    while (x != root && x.getColor() == 0) {
-        if (x == x.getParent().getLeftChild()) {
-            RBTreeNode<E> w = x.getParent().getRightChild();
-            if (w.getColor() == 0) {
-                w.setColor(1);
-                x.getParent().setColor(0);
-                leftRotate(x.getParent());
-            }
-            if (w.getLeftChild().getColor() == 1 &&
-                w.getRightChild().getColor() == 1) {
-
-                w.setColor(0);
-                x = x.getParent();
-            } else  {
-                if (w.getRightChild().getColor() == 1) {
-                    w.getLeftChild().setColor(1);
-                    w.setColor(0);
-                    rightRotate(w);
-                    w = x.getParent().getRightChild();
-                }
-                w.setColor(x.getParent().getColor());
-                x.getParent().setColor(1);
-                w.getRightChild().setColor(1);
-                leftRotate(x.getParent());
-                x = root;
-            }
-        } else {
-            RBTreeNode<E> w = x.getParent().getLeftChild();
-            if (w.getColor() == 0) {
-                w.setColor(1);
-                x.getParent().setColor(0);
-                rightRotate(x.getParent());
-            }
-            if (w.getRightChild().getColor() == 1 && w.getLeftChild().getColor() == 1) {
-                w.setColor(0);
-                x = x.getParent();
-            } else  {
-                if (w.getLeftChild().getColor() == 1) {
-                    w.getRightChild().setColor(1);
-                    w.setColor(0);
-                    leftRotate(w);
-                    w = x.getParent().getLeftChild();
-                }
-                w.setColor(x.getParent().getColor());
-                x.getParent().setColor(1);
-                w.getLeftChild().setColor(1);
-                rightRotate(x.getParent());
-                x = root;
-            }
-        }
-    } // while
-    x.setColor(1);
-  } // method
-
-  /**
-    * Metodi RBTreeAddFixup tarkastaa solmujen värit sekä tasapainottaa puun lisäysoperaation tapauksessa
-    * kutsuen kääntöoperaatioiden metodeja leftRotate sekä rightRotate (Cormen, Leiserson, Rivest)
-    * @author Juhani Seppälä
-    * @param node Solmu, johon korjaustoimi kohdistuu
-    *
-    */
-  private void RBTreeAddFixup(RBTreeNode<E> node) {
-    System.out.println("AddFixup called with elem: " + node + " p: " + node.getParent());
-
-    while (node.getParent() != null &&
-           node.getParent().getParent() != null &&
-           node.getParent().getColor() == 0) {
-
-        if (node.getParent() == node.getParent().getParent().getLeftChild()) {
-            RBTreeNode<E> uncle = node.getParent().getParent().getRightChild();
-            if (uncle.getColor() == 0) {
-                node.getParent().setColor(1);
-                uncle.setColor(1);
-                node = node.getParent().getParent();
-                node.setColor(0);
-            } else {
-                if (node == node.getParent().getRightChild()) {
-                    node = node.getParent();
-                    leftRotate(node);
-                }
-                node.getParent().setColor(1);
-                node.getParent().getParent().setColor(0);
-                rightRotate(node.getParent().getParent());
-            }
-        } else if (node.getParent() == node.getParent().getParent().getRightChild()) {
-            RBTreeNode<E> uncle = node.getParent().getParent().getLeftChild();
-            if (uncle.getColor() == 0) {
-                node.getParent().setColor(1);
-                uncle.setColor(1);
-                node = node.getParent().getParent();
-                node.setColor(0);
-            } else {
-                if (node == node.getParent().getLeftChild()) {
-                    node = node.getParent();
-                    rightRotate(node);
-                }
-                node.getParent().setColor(1);
-                node.getParent().getParent().setColor(0);
-                leftRotate(node.getParent().getParent());
-            }
-        }
-    }
-    root.setColor(1);
-  }
-
-  /**
-    * Metodi leftRotate suorittaa parametrina annetun solmun perusteella puulle vasemman käännön
-    * @author Tero Kettunen
-    * @param node Solmu, josta alkaen vasen kääntö suoritetaan
-    *
-    */
-  private void leftRotate(RBTreeNode<E> node) {
-    RBTreeNode<E> y = node.getRightChild();  //otetaan talteen noden oikea lapsi y
-    node.setRightChild(y.getLeftChild()); // y:n vasen alipuu noden oikeaksi alipuuksi
-    if (y.getLeftChild() != null)
-      y.getLeftChild().setParent(node);
-
-    y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
-    
-    if (node.getParent() == null) {       // Jos node on juuri
-      setRoot(y);             
-    } else {
-      if (node == node.getParent().getLeftChild())
-        node.getParent().setLeftChild(y);
-      else
-        node.getParent().setRightChild(y);
-    }
-    y.setLeftChild(node);
-    node.setParent(y);
-  }
-
-  /**
-    * Metodi rightRotate suorittaa parametrina annetun solmun perusteella puulle oikean käännön
-    * @author Tero Kettunen
-    * @param node Solmu, josta alkaen oikea kääntö suoritetaan
-    *
-    */
-  private void rightRotate(RBTreeNode<E> node) {
-    RBTreeNode<E> y = node.getLeftChild();  //otetaan talteen noden vasen lapsi y
-    node.setLeftChild(y.getRightChild()); // y:n oikea alipuu noden vasemmaksi alipuuksi
-    if (y.getLeftChild() != null)
-      y.getLeftChild().setParent(node);
-
-    y.setParent(node.getParent());      // noden vanhempi y:n vanhemmaksi
-    
-    if (node.getParent() == null) {       // Jos node on juuri
-      setRoot(y);             
-    } else {
-      if (node == node.getParent().getLeftChild())
-        node.getParent().setLeftChild(y);
-      else
-        node.getParent().setRightChild(y);
-    }
-    
-    y.setRightChild(node);
-    node.setParent(y);
-  }
 
   /**
     * Metodi getOrderedListData muodostaa ja palauttaa järjestetyn listan puun solmujen datakentistä.
@@ -499,9 +494,9 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     *
     */
-  private RBTree<E> treeFromList(ArrayList<E> list) {
+  public RBTree<E> treeFromList(ArrayList<E> list) {
     RBTree<E> tree = new RBTree<E>();
-    root = treeFromListNode(list, 0, list.size() - 1);
+    RBTreeNode<E> root = treeFromListNode(list, 0, list.size() - 1);
 
     tree.setRoot(root);
     tree.setSize(list.size());
@@ -514,17 +509,32 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     */
   private RBTreeNode<E> treeFromListNode(ArrayList<E> list,  int start, int end) {
-    if (start > end)
+    if (start > end) 
       return null;
 
     int pivot = (start + end) / 2;
 
     RBTreeNode<E> node = new RBTreeNode<E>(list.get(pivot));
-    node.setColor(0);
 
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
-    node.setColor(1);
+
+    // Todelliset lehtisolmut voidaan asettaa tasapainoisessa puussa yksinkertaisesti punaiseksi, muut mustiksi.
+    if (node.getLeftChild() == null && node.getRightChild() == null)
+      node.setColor(0);
+    else
+      node.setColor(1);
+
+    // Laitetaan sisäiset lehtisolmut (kuten add).
+    if (node.getLeftChild() == null) {
+      RBTreeNode<E> sentinelLeft = new RBTreeNode<E>(node);
+      node.setLeftChild(sentinelLeft);
+    }
+    
+    if (node.getRightChild() == null) {
+      RBTreeNode<E> sentinel = new RBTreeNode<E>(node);
+      node.setRightChild(sentinel);
+    }
 
     return node;
   }

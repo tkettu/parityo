@@ -11,12 +11,23 @@ public class RBTreeNode<E> {
   private int color; // 0 = r, 1 = b
   private boolean sentinel;
 
+    /**
+    * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
+    * @param element Solmun hyötytiedoksi tuleva data
+    *
+    */
+  public RBTreeNode() {
+    this.parent = parent;
+    sentinel = true;
+    color = 1;
+  }
+
   /**
     * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public RBTreeNode(RBTreeNode<E> parent){
+  public RBTreeNode(RBTreeNode<E> parent) {
     this.parent = parent;
     sentinel = true;
     color = 1;
@@ -28,7 +39,7 @@ public class RBTreeNode<E> {
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
-  public RBTreeNode(E element){
+  public RBTreeNode(E element) {
     this.element = element;
     this.sentinel = false;
   }
@@ -43,7 +54,7 @@ public class RBTreeNode<E> {
                         RBTreeNode<E> parent,
                         RBTreeNode<E> leftChild,
                         RBTreeNode<E> rightChild,
-                        int color){
+                        int color) {
     this.element = element;
     this.parent = parent;
     this.leftChild = leftChild;
@@ -61,11 +72,7 @@ public class RBTreeNode<E> {
     * @return Solmun vasen lapsi tai null, jos solmulla ei ole vasenta lasta
     *
     */
-  public RBTreeNode<E> getLeftChild(){
-    if (leftChild == null) {
-      RBTreeNode<E> sentinelNode = new RBTreeNode<E>(this);
-      leftChild = sentinelNode;
-    }
+  public RBTreeNode<E> getLeftChild() {
     return leftChild;
   }
   
@@ -74,11 +81,7 @@ public class RBTreeNode<E> {
     * @return Solmun oikea lapsi tai null, jos solmula ei ole oikeaa lasta
     *
     */
-  public RBTreeNode<E> getRightChild(){
-    if (rightChild == null) {
-      RBTreeNode<E> sentinelNode= new RBTreeNode<E>(this);
-      rightChild = sentinelNode;
-    }
+  public RBTreeNode<E> getRightChild() {
     return rightChild;
   }
   
@@ -86,7 +89,7 @@ public class RBTreeNode<E> {
     * Metodi getParent palauttaa tarkasteltavan solmun vanhemman
     * @return Solmun vanhempi tai null, jos solmu on puun juurisolmu
     */
-  public RBTreeNode<E> getParent(){
+  public RBTreeNode<E> getParent() {
     return parent;
   }
 
@@ -105,7 +108,7 @@ public class RBTreeNode<E> {
     * @param node Vasemmaksi lapseksi asetettava solmu
     *
     */
-  public void setLeftChild(RBTreeNode<E> node){
+  public void setLeftChild(RBTreeNode<E> node) {
     leftChild = node;
   }
   
@@ -115,7 +118,7 @@ public class RBTreeNode<E> {
     * @param node Oikeaksi lapseksi asetettava solmu
     *
     */
-  public void setRightChild(RBTreeNode<E> node){
+  public void setRightChild(RBTreeNode<E> node) {
     rightChild = node;
   }
   
@@ -124,7 +127,7 @@ public class RBTreeNode<E> {
     * @param node Vanhemmaksi asetettava solmu
     *
     */
-  public void setParent(RBTreeNode<E> node){
+  public void setParent(RBTreeNode<E> node) {
     parent = node;
   }
   
@@ -133,7 +136,7 @@ public class RBTreeNode<E> {
     * @param color Solmun väriksi asettava väri ("0|1")
     *
     */
-  public void setColor(int color){
+  public void setColor(int color) {
     this.color =  color;
   }
   
@@ -142,7 +145,7 @@ public class RBTreeNode<E> {
     * @return Solmun väri ("0|1")
     *
     */
-  public int getColor(){
+  public int getColor() {
     return color;
   }
 
