@@ -157,8 +157,9 @@ public class RBTree<E extends Comparable<E>> {
     
     if (z.getLeftChild().getSentinel() || z.getRightChild().getSentinel())
       y = z;
-    else
+    else {
       y = successor(z);
+    }
     
     if (y.getLeftChild() != null && !y.getLeftChild().getSentinel()) 
       x = y.getLeftChild();
@@ -189,6 +190,7 @@ public class RBTree<E extends Comparable<E>> {
     * @param node solmu, joka saattaa rikkoa puun tasapainoa
     */
   private void removeFixup(RBTreeNode<E> x) {
+//    System.out.println("RemoteFixup called for: " + x);
     while (x != root && x.getColor() == 1) {
         if (x == x.getParent().getLeftChild()) {
             RBTreeNode<E> w = x.getParent().getRightChild();
@@ -197,9 +199,7 @@ public class RBTree<E extends Comparable<E>> {
                 x.getParent().setColor(0);
                 leftRotate(x.getParent());
             }
-            if (w.getLeftChild().getColor() == 1 &&
-                w.getRightChild().getColor() == 1) {
-
+            if (w.getLeftChild().getColor() == 1 && w.getRightChild().getColor() == 1) {
                 w.setColor(0);
                 x = x.getParent();
             } else  {
@@ -399,7 +399,6 @@ public class RBTree<E extends Comparable<E>> {
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
     RBTree<E> tree = treeFromList(listUnion(list1, list2));
-    colorBalancedRBTree(tree.getRoot());
     return tree;
   }
   
@@ -418,7 +417,6 @@ public class RBTree<E extends Comparable<E>> {
       ArrayList<E> list1 = getOrderedListData();
       ArrayList<E> list2 = t.getOrderedListData();
       newTree = treeFromList(listIntersect(list1, list2));
-      colorBalancedRBTree(newTree.getRoot());
     }
     return newTree;
   }
@@ -437,7 +435,6 @@ public class RBTree<E extends Comparable<E>> {
     ArrayList<E> list1 = getOrderedListData();
     ArrayList<E> list2 = t.getOrderedListData();
     RBTree<E> tree = treeFromList(listDifference(list1, list2));
-    colorBalancedRBTree(tree.getRoot());
     return tree;
   }
   
@@ -523,8 +520,9 @@ public class RBTree<E extends Comparable<E>> {
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
 
-    // Todelliset lehtisolmut voidaan asettaa tasapainoisessa puussa yksinkertaisesti punaiseksi, muut mustiksi.
-    if (node.getLeftChild() == null && node.getRightChild() == null)
+    if (node.getParent() == null)
+      node.setColor(1);
+    else if (node.getLeftChild() == null && node.getRightChild() == null)
       node.setColor(0);
     else
       node.setColor(1);
