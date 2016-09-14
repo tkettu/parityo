@@ -17,8 +17,7 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode() {
-    this.parent = parent;
-    sentinel = true;
+    sentinel = false;
     color = 1;
   }
 
@@ -73,6 +72,8 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getLeftChild() {
+    if (leftChild == null) 
+      leftChild =  new RBTreeNode<E>(this);
     return leftChild;
   }
   
@@ -82,6 +83,8 @@ public class RBTreeNode<E> {
     *
     */
   public RBTreeNode<E> getRightChild() {
+    if (rightChild == null)
+      rightChild =  new RBTreeNode<E>(this);
     return rightChild;
   }
   

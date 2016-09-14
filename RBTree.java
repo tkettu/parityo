@@ -151,6 +151,8 @@ public class RBTree<E extends Comparable<E>> {
     RBTreeNode<E> z = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
     RBTreeNode<E> y;  //apusolmu    
     RBTreeNode<E> x;  //apusolmu
+
+    System.out.println("Z in remove: " + z);
     
     if (z == null)
       return null;
@@ -159,23 +161,29 @@ public class RBTree<E extends Comparable<E>> {
       y = z;
     else {
       y = successor(z);
+      System.out.println("Succ y: " + y);
     }
-    
+    System.out.println("Y in remove: " + y);
+
+    System.out.println("Y left: " + y.getLeftChild());
+    System.out.println("Y right: " + y.getRightChild());
+
     if (y.getLeftChild() != null && !y.getLeftChild().getSentinel()) 
       x = y.getLeftChild();
     else
       x = y.getRightChild();
     
+    System.out.println("X in remove: " + x);
     x.setParent(y.getParent());
-    
     if (y.getParent() == null)
-      setRoot(x);
+      root = x;
     else {
       if (y == y.getParent().getLeftChild())
         y.getParent().setLeftChild(x);
       else
         y.getParent().setRightChild(x);
     }
+    System.out.println("X in remove: " + x);
     if (y != z)
       z.setElement(y.getElement());
     if (y.getColor() == 1)
@@ -190,10 +198,12 @@ public class RBTree<E extends Comparable<E>> {
     * @param node solmu, joka saattaa rikkoa puun tasapainoa
     */
   private void removeFixup(RBTreeNode<E> x) {
-//    System.out.println("RemoteFixup called for: " + x);
-    while (x != root && x.getColor() == 1) {
+    x.getElement();
+    System.out.println("RemoveFixup called for: " + x.getElement());
+    while (x  != root && x.getColor() == 1) {
         if (x == x.getParent().getLeftChild()) {
             RBTreeNode<E> w = x.getParent().getRightChild();
+            System.out.println("W: " + w);
             if (w.getColor() == 0) {
                 w.setColor(1);
                 x.getParent().setColor(0);
@@ -217,6 +227,7 @@ public class RBTree<E extends Comparable<E>> {
             }
         } else {
             RBTreeNode<E> w = x.getParent().getLeftChild();
+            System.out.println("W: " + w);
             if (w.getColor() == 0) {
                 w.setColor(1);
                 x.getParent().setColor(0);
@@ -474,7 +485,7 @@ public class RBTree<E extends Comparable<E>> {
   }
 
     /**
-     * Metodi inorderAddBranch lisää parametrina annetun puun solmujen datakentät sisäjärjestyksessä  parametrina annettuun listaan.
+     * Metodi inorderAddBranch lisää parametrina annetun puun solmujen elementit sisäjärjestyksessä  parametrina annettuun listaan.
      * @author Juhani Seppälä
      *
      */
@@ -506,7 +517,7 @@ public class RBTree<E extends Comparable<E>> {
   }
 
   /**
-    * Metodi treeFromListNode on treeFromList -metodin rekursio, joka rekursion päättyessä tasapainoisen puun juurisolmun
+    * Metodi treeFromListNode on treeFromList -metodin rekursio, joka palauttaa tasapainoisen puun juurisolmun
     * @author Juhani Seppälä
     */
   private RBTreeNode<E> treeFromListNode(ArrayList<E> list,  int start, int end) {
@@ -520,9 +531,7 @@ public class RBTree<E extends Comparable<E>> {
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
 
-    if (node.getParent() == null)
-      node.setColor(1);
-    else if (node.getLeftChild() == null && node.getRightChild() == null)
+    if (node.getLeftChild() == null && node.getRightChild() == null)
       node.setColor(0);
     else
       node.setColor(1);

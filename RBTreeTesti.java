@@ -89,19 +89,19 @@ public class RBTreeTesti {
     for (int i = 0; i < runs; i++) {
       addedData = new ArrayList<Integer>();
       RBTree<Integer> tree = randomRBTree(n, addedData);
-//      BTreePrinter.printNode(tree.getRoot());
+      BTreePrinter.printNode(tree.getRoot());
       for (int j = 0; j < addedData.size(); j++) {
-//        System.out.println("Poistetaan... " + addedData.get(j) + "\n");
-//        try {
-//          Thread.sleep(200);
-//        } catch (Exception e) {}
+        System.out.println("Poistetaan... " + addedData.get(j) + "\n");
+        try {
+          Thread.sleep(200);
+        } catch (Exception e) {}
         tree.remove(addedData.get(j));
-//        BTreePrinter.printNode(tree.getRoot());
+        BTreePrinter.printNode(tree.getRoot());
         if (!checkRBTree(tree)) {
-//          System.out.println("FAIL");
+          System.out.println("FAIL");
           success = false;
         } else {
-//          System.out.println("PASS");
+          System.out.println("PASS");
         }
       }
     }
@@ -113,17 +113,22 @@ public class RBTreeTesti {
    */
   private static boolean testUnion(int runs, int n) {
     boolean success = true;
+    ArrayList<Integer> addedData = new ArrayList<>();
     System.out.println("Testataan union... toistot: " + runs);
+    Random r = new Random();
     for (int i = 0; i < runs; i++) {
       RBTree<Integer> tree1 = randomRBTree(n, new ArrayList<Integer>());
       RBTree<Integer> tree2 = randomRBTree(n, new ArrayList<Integer>());
       RBTree<Integer> union = tree1.union(tree2);
-      if (!checkRBTree(union)) {
-//        System.out.println("FAIL");
-        success = false;
-      } else {
-//        System.out.println("PASS");
+      for (int j = 0; j < n / 2; j++) {
+        union.add(r.nextInt(2 * n));
       }
+      for (int j = 0; j < addedData.size() / 2; j++) {
+        union.remove(addedData.get(j));
+      }
+//      BTreePrinter.printNode(union.getRoot());
+      if (!checkRBTree(union))
+        success = false;
     }
     return success;
   }
@@ -133,18 +138,22 @@ public class RBTreeTesti {
    */
   private static boolean testIntersection(int runs, int n) {
     boolean success = true;
+    ArrayList<Integer> addedData = new ArrayList<>();
     System.out.println("Testataan intersection... toistot: " + runs);
+    Random r = new Random();
     for (int i = 0; i < runs; i++) {
-      RBTree<Integer> tree1 = randomRBTree(n, new ArrayList<Integer>());
-      RBTree<Integer> tree2 = randomRBTree(n, new ArrayList<Integer>());
+      RBTree<Integer> tree1 = randomRBTree(n, addedData);
+      RBTree<Integer> tree2 = randomRBTree(n, addedData);
       RBTree<Integer> intersection = tree1.intersection(tree2);
-      if (!checkRBTree(intersection)) {
-//        System.out.println("FAIL");
-        BTreePrinter.printNode(intersection.getRoot());
-        success = false;
-      } else {
-//        System.out.println("PASS");
+      for (int j = 0; j < n / 2; j++) {
+        intersection.add(r.nextInt(2 * n));
       }
+      for (int j = 0; j < addedData.size() / 2; j++) {
+        intersection.remove(addedData.get(j));
+      }
+//      BTreePrinter.printNode(intersection.getRoot());
+      if (!checkRBTree(intersection))
+        success = false;
     }
     return success;
   }
@@ -154,17 +163,21 @@ public class RBTreeTesti {
    */
   private static boolean testDifference(int runs, int n) {
     boolean success = true;
+    ArrayList<Integer> addedData = new ArrayList<>();
     System.out.println("Testataan difference... toistot: " + runs);
+    Random r = new Random();
     for (int i = 0; i < runs; i++) {
-      RBTree<Integer> tree1 = randomRBTree(n, new ArrayList<Integer>());
-      RBTree<Integer> tree2 = randomRBTree(n, new ArrayList<Integer>());
+      RBTree<Integer> tree1 = randomRBTree(n, addedData);
+      RBTree<Integer> tree2 = randomRBTree(n, addedData);
       RBTree<Integer> difference = tree1.difference(tree2);
-      if (!checkRBTree(difference)) {
-//        System.out.println("FAIL");
-        success = false;
-      } else {
-//        System.out.println("PASS");
+      for (int j = 0; j < n / 2; j++) {
+        difference.add(r.nextInt(2 * n));
       }
+      for (int j = 0; j < addedData.size() / 2; j++) {
+        difference.remove(addedData.get(j));
+      }
+      if (!checkRBTree(difference))
+        success = false;
     }
     return success;
   }
@@ -206,12 +219,13 @@ public class RBTreeTesti {
    */
   private static RBTree<Integer> randomRBTree(int n, ArrayList<Integer> addedData) {
 //    System.out.println("Luodaan satunnainen puu, koko: " + n);
-    Random R = new Random();
+    Random r = new Random();
     RBTree<Integer> tree = new RBTree<Integer>();
     for (int i = 0; i<n; i++){
-      Integer x = R.nextInt(2 * n);
-      tree.add(x);
-      addedData.add(x);
+      Integer x = r.nextInt(2 * n);
+      RBTreeNode<Integer> node = tree.add(x);
+      if (node != null)
+        addedData.add(x);
     }
     return tree;
   }
@@ -219,7 +233,7 @@ public class RBTreeTesti {
   /*
     Metodi minHeight laskee ja palauttaa lyhimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
   */
-  private static int minHeight(RBTreeNode node) {
+  private static int minHeight(RBTreeNode<Integer> node) {
     if (node == null || node.getSentinel())
       return 0;
     return 1 + Math.min(minHeight(node.getLeftChild()), minHeight(node.getRightChild()));
@@ -228,10 +242,34 @@ public class RBTreeTesti {
   /*
     Metodi maxHeight laskee ja palauttaa pisimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
   */
-  private static int maxHeight(RBTreeNode node) {
+  private static int maxHeight(RBTreeNode<Integer> node) {
     if (node == null || node.getSentinel())
       return 0;
     return 1 + Math.max(maxHeight(node.getLeftChild()), maxHeight(node.getRightChild()));
+  }
+
+  /*
+   * Metodi blackHeight palauttaa solmun mustan korkuden, tai -1 virhearvon 
+   */
+  private static int blackHeight(RBTreeNode<Integer> node) {
+    int bh = 0;
+    int bhl = 0;
+    int bhr = 0;
+    if (node.getColor() == 1)
+      bh++;
+    if (!node.getLeftChild().getSentinel())
+      bhl = blackHeight(node.getLeftChild());
+    else
+      bhl = 1;
+    if (!node.getRightChild().getSentinel())
+      bhr = blackHeight(node.getRightChild());
+    else
+      bhr = 1;
+
+    if (bhl != bhr)
+      return -1;
+    bh += bhl;
+    return bh;
   }
   
   /*
@@ -258,9 +296,15 @@ public class RBTreeTesti {
       return false;
 
     /*
-     * Ominaisuus 5 (tasapainoisuus)
+     * Tasapainoisuus
      */
     if (maxHeight(juuri) > minHeight(juuri) * 2)
+      return false;
+
+    /*
+     * Ominaisuus 5
+     */
+    if (blackHeight(juuri) == -1)
       return false;
 
     return checkRBTreeApu(juuri);
