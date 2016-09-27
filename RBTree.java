@@ -79,7 +79,7 @@ public class RBTree<E extends Comparable<E>> {
     * The method add inserts the parameter-given element into the tree if the element is not already in the tree
     * @author Juhani Seppälä
     * @param data The element to be inserted into the tree
-    * @return Node that added and constructed from the paratemer-given element, or null, if the element was a duplicate
+    * @return Node that was added and constructed from the paratemer-given element, or null, if the element was a duplicate
     */
   public RBTreeNode<E> add(E data) {
 
