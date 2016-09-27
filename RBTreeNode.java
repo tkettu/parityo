@@ -1,5 +1,5 @@
 /**
-  * Luokka RBTreeNode on RBTree:n solmutyyppi
+  * The class RBTreeNode is an abstract Node implementation for the RBTree class
   * @author Juhani Seppälä
   * 
   */
@@ -12,30 +12,22 @@ public class RBTreeNode<E> {
   private boolean sentinel;
 
     /**
-    * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
+    * The empty constructor for the class RBTreeNode constructs a new sentinel-node with the color set to black
+    * and the sentinel-flag set to true
     * @param element Solmun hyötytiedoksi tuleva data
+    * @author Juhani Seppälä
     *
     */
   public RBTreeNode() {
-    sentinel = false;
-    color = 1;
-  }
-
-  /**
-    * Luokan RBTreeNode konstruktori muodostaa sentinel-solmun ilman tietokenttää
-    * @param element Solmun hyötytiedoksi tuleva data
-    *
-    */
-  public RBTreeNode(RBTreeNode<E> parent) {
-    this.parent = parent;
     sentinel = true;
     color = 1;
   }
 
   /**
-    * Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
-    * solmun
+    * The constructor for the class RBTreeNode, given an element, constructs a new node with the parameter-given
+    * element, the sentinel-flag set to false and the default color of red
     * @param element Solmun hyötytiedoksi tuleva data
+    * @author Juhani Seppälä
     *
     */
   public RBTreeNode(E element) {
@@ -45,7 +37,10 @@ public class RBTreeNode<E> {
 
   /**
     * Luokan RBTreeNode konstruktori muodostaa parametrina saadusta objektista uuden
-    * solmun
+    * solmun 
+    * The constructor for the class RBTreeNode, given an element, parent, left child node, right child node and the color, constructs a new node
+    * with all the parameter-given values as its attributes and the sentinel flag set to false
+    * @author Juhani Seppälä
     * @param element Solmun hyötytiedoksi tuleva data
     *
     */
@@ -62,43 +57,48 @@ public class RBTreeNode<E> {
     this.sentinel = false;
   }
 
+  /**
+    * The method getElement returns the element of this node
+    * @return The element of this node
+    * @author Juhani Seppälä
+    */
   public E getElement() {
     return element;
   }
   
   /**
-    * Metodi getLeftChild palauttaa tarkasteltavan solmun vasemman lapsen
-    * @return Solmun vasen lapsi tai null, jos solmulla ei ole vasenta lasta
+    * The method getLeftChild returns the left child of this node
+    * @return The left child of this node, or null, if no left child exists
+    * @author Juhani Seppälä
     *
     */
   public RBTreeNode<E> getLeftChild() {
-    if (leftChild == null) 
-      leftChild =  new RBTreeNode<E>(this);
     return leftChild;
   }
   
   /**
-    * Metodi getRightChild palauttaa tarkasteltavan solmun oikean lapsen
-    * @return Solmun oikea lapsi tai null, jos solmula ei ole oikeaa lasta
+    * The method getRightChild returns the left child of this node
+    * @return The right child of this node, or null, if no right chil exists
+    * @author Juhani Seppälä
     *
     */
   public RBTreeNode<E> getRightChild() {
-    if (rightChild == null)
-      rightChild =  new RBTreeNode<E>(this);
     return rightChild;
   }
   
   /**
-    * Metodi getParent palauttaa tarkasteltavan solmun vanhemman
-    * @return Solmun vanhempi tai null, jos solmu on puun juurisolmu
+    * The method parent return the parent of this node
+    * @return The parent of this node, or null, if no parent node exists
+    * @author Juhani Sepäälä
     */
   public RBTreeNode<E> getParent() {
     return parent;
   }
 
   /**
-    * Metodi setElement asettaa parametrina saadun objektin tämän solmun hyötytiedoksi
-    * @param element Solmun uusi hyötytieto
+    * The method setElement sets the parameter-given element as the element of this node
+    * @param The element to be set as the element of this node
+    * @author Juhani Seppälä
     *
     */
   public void setElement(E element) {
@@ -106,32 +106,26 @@ public class RBTreeNode<E> {
   }
   
   /**
-    * Metodi setLeftChild asettaa parametrina saadun solmun tämän solmun vasemmaksi
-    * lapseksi
-    * @param node Vasemmaksi lapseksi asetettava solmu
+    * The method setLeftChild set the parameter-given node as the left child of this node
+    * @param node The node to be set as the left child of this node
     *
     */
   public void setLeftChild(RBTreeNode<E> node) {
     leftChild = node;
-    if (node != null)
-      node.setParent(this);
   }
   
   /**
-    * Metodi setRightChild asettaa parametrina saadun solmun tämän solmun oikeaksi
-    * lapseksi
-    * @param node Oikeaksi lapseksi asetettava solmu
+    * The method setRightChild sets the parameter-given node as the right child of this node
+    * @param node The node to be set as the right child of this node
     *
     */
   public void setRightChild(RBTreeNode<E> node) {
     rightChild = node;
-    if (node != null)
-      node.setParent(this);
   }
   
   /**
-    * Metodi setParent asettaa parametrina saadun solmun tämän solmun vanhemmaksi
-    * @param node Vanhemmaksi asetettava solmu
+    * The method setParent sets the parameter-given node as the parent of this node
+    * @param node The node to be added as the parent of this node
     *
     */
   public void setParent(RBTreeNode<E> node) {
@@ -139,8 +133,8 @@ public class RBTreeNode<E> {
   }
   
   /**
-    * Metodi setColor asettaa parametrina saadun värin tämän solmun väriksi
-    * @param color Solmun väriksi asettava väri ("0|1")
+    * The method setColor sets the parameter-given color as the color of this node
+    * @param color The color to be set as the color of this node (0 = red, 1 = black)
     *
     */
   public void setColor(int color) {
@@ -148,24 +142,34 @@ public class RBTreeNode<E> {
   }
   
   /**
-    * Metodi getColor palauttaa tarkasteltavan solmun värin
-    * @return Solmun väri ("0|1")
+    * The method getColor returns the color of this node
+    * @return The color of this node (0 = red, 1 = black)
     *
     */
   public int getColor() {
     return color;
   }
 
+  /**
+    * The method setSentinel sets the parameter-given sentinel-flaq as the sentinel-flag of this node
+    * @author Juhani Seppälä
+    */
   public void setSentinel(boolean sentinel) {
     this.sentinel = sentinel;
   }
 
+  /**
+    * The method 
+    */
   public boolean getSentinel() {
     return sentinel;
   }
 
   public String toString() {
-    return String.valueOf(element);
+    if (element != null)
+      return String.valueOf(element);
+    else
+      return "-";
   }
   
 } // class
