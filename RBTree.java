@@ -1,8 +1,7 @@
 /**
-  * The class RBTree is a Red-black Tree implementation
+  * The class RBTree is a Red-Black Tree implementation based on Cormen, Leiserson, Rivest (CLR)
   * @author Tero Kettunen
   * @author Juhani Seppälä
-  * 
   */
 import java.util.ArrayList;
 
@@ -13,8 +12,7 @@ public class RBTree<E extends Comparable<E>> {
   private RBTreeNode<E> root;
   
   /**
-    * The empty constructor for the class RBTree creates an empty tree with no root and zero size
-    *
+    * The default constructor for the class RBTree creates an empty tree with no root and zero size
     */
   public RBTree(){
 
@@ -28,33 +26,60 @@ public class RBTree<E extends Comparable<E>> {
   public boolean isEmpty() {
     return size == 0;
   }
-  
-  /**
-    * The method setRoot sets the root of this tree to be the parameter-given node
-    * @author Juhani Seppälä
-    * @param node The node to be set as the root of this tree
-    *
+
+  /** 
+    * The method size returns the size of this tree
+    * @author Tero Kettunen
+    * @return Nykyinen puun solmujen lukumäärä
     */
-  public void setRoot(RBTreeNode<E> node){
-    root = node;
+  public int size(){
+    return size;
   }
   
+  /** 
+    * The method setSize sets the size of this tree
+    * @author Tero Kettunen
+    * @param newSize The new size of this tree
+    */
+  public void setSize(int newSize){
+    size = newSize;
+  }
+
   /**
    * The method getRoot returns the root node of this tree
    * @author Tero Kettunen
-   * @return Root of this tree
+   * @return The root of this tree
    */
   public RBTreeNode<E> getRoot(){
     return root;  
   }
   
-   
+  /**
+    * The method setRoot sets the root of this tree to be the parameter-given node
+    * @author Juhani Seppälä
+    * @param node The node to be set as the root of this tree
+    */
+  public void setRoot(RBTreeNode<E> node){
+    root = node;
+  }
+
+  /**
+    * The method height calculates and returns the height of the parameter-given node
+    * @param node The node of interest
+    * @return The height of the parameter-given node
+    * @author Juhani Seppälä
+    */
+  public int getHeight(RBTreeNode<E> node) {
+    if (node.getSentinel())
+      return  -1;
+    return 1 + Math.max(getHeight(node.getLeftChild()), getHeight(node.getRightChild()));
+  }
+  
   /**
     * The method add inserts the parameter-given element into the tree if the element is not already in the tree
     * @author Juhani Seppälä
     * @param data The element to be inserted into the tree
     * @return Node that added and constructed from the paratemer-given element, or null, if the element was a duplicate
-    *
     */
   public RBTreeNode<E> add(E data) {
 
@@ -96,7 +121,6 @@ public class RBTree<E extends Comparable<E>> {
   * The method RBTreeAddFixup repairs the Red-black Tree property violations in the tree starting from the parameter-given node
   * @author Juhani Seppälä
   * @param node Node from which the repair procedure starts
-  *
   */
   private void addFixup(RBTreeNode<E> z) {
     while (z.getParent() != null && z.getParent().getParent() != null && z.getParent().getColor() == 0) {
@@ -146,9 +170,9 @@ public class RBTree<E extends Comparable<E>> {
     */
   public RBTreeNode<E> remove(E data){
   
-    RBTreeNode<E> z = search(data);  //etsitään oikea poistettava solmu, jos on olemassa
-    RBTreeNode<E> y;  //apusolmu    
-    RBTreeNode<E> x;  //apusolmu
+    RBTreeNode<E> z = search(data);
+    RBTreeNode<E> y;    
+    RBTreeNode<E> x;
     
     if (z == null)
       return null;
@@ -243,12 +267,10 @@ public class RBTree<E extends Comparable<E>> {
     x.setColor(1);
   } // method
 
-
   /**
     * The method leftRotate performs the left rorate operation on the subtree denoted by by the parameter-given node
     * @author Tero Kettunen
     * @param node The node from which the left rotate operation is to be performed
-    *
     */
   private void leftRotate(RBTreeNode<E> x) {
     RBTreeNode<E> y = x.getRightChild();  //otetaan talteen noden oikea lapsi y
@@ -274,7 +296,6 @@ public class RBTree<E extends Comparable<E>> {
     * The method rightRotate performs the right rorate operation on the subtree denoted by by the parameter-given node
     * @author Tero Kettunen
     * @param node The node from which the left rotate operation is to be performed
-    *
     */
   private void rightRotate(RBTreeNode<E> x) {
     RBTreeNode<E> y = x.getLeftChild();  //otetaan talteen noden vasen lapsi y
@@ -301,7 +322,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param data The element to be searched from this tree
     * @return The node representing the parameter-given element, or null if the element was not in this tree
-    *
     */
   public RBTreeNode<E> search(E data) {
     if (size == 0)
@@ -323,7 +343,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param node The node from which the successor is to be searched
     * @return The next largest node after the parameter-given node
-    *
     */
   public RBTreeNode<E> successor(RBTreeNode<E> x) {
     if (x.getRightChild() != null && !x.getRightChild().getSentinel())
@@ -338,12 +357,12 @@ public class RBTree<E extends Comparable<E>> {
     }
   }
 
-/**
-  * The method predecessor returns the next smallest element in this tree after the parameter-given node
-  * @author Juhani Seppälä
-  * @param node The node from which the predecessor is to be searched
-  * @return The predecessor node of the parameter-given node, or null, if no predecessor exists
-  */
+  /**
+    * The method predecessor returns the next smallest element in this tree after the parameter-given node
+    * @author Juhani Seppälä
+    * @param node The node from which the predecessor is to be searched
+    * @return The predecessor node of the parameter-given node, or null, if no predecessor exists
+    */
   public RBTreeNode<E> predecessor(RBTreeNode<E> node) {
     if (node.getLeftChild() != null) {
       node = node.getLeftChild();
@@ -376,7 +395,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param node root node of the subtree from which the smallest element is to be searched
     * @return The smallest element within the subtree denoted by parameter-given subtree root
-    *
     */
   public RBTreeNode<E> min(RBTreeNode<E> node) {
     while (node.getLeftChild() != null && !node.getLeftChild().getSentinel())
@@ -389,7 +407,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param t The tree with which the union is to be formed
     * @return The tree representing the union of the elements of this tree and the parameter-given tree
-    *
     */
   public RBTree<E> union(RBTree<E> t) {
     if (t.isEmpty())
@@ -407,7 +424,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param t The tree with which the intersection is to be formed
     * @return The tree representing the intersection of the elements of this tree and the parameter-given tree
-    *
     */
   public RBTree<E> intersection(RBTree<E> t) {
     RBTree<E> newTree = new RBTree<E>();
@@ -425,7 +441,6 @@ public class RBTree<E extends Comparable<E>> {
     * @author Juhani Seppälä
     * @param t The tree with which the difference is to be formed
     * @return The tree representing the difference of the elements of this tree and the parameter-given tree
-    *
     */  
   public RBTree<E> difference(RBTree<E> t) {
     if (t.isEmpty())
@@ -436,32 +451,10 @@ public class RBTree<E extends Comparable<E>> {
     RBTree<E> tree = treeFromList(listDifference(list1, list2));
     return tree;
   }
-  
-  /** 
-    * The method size returns the size of this tree
-    * @author Tero Kettunen
-    * @return Nykyinen puun solmujen lukumäärä
-    *
-    */
-  public int size(){
-    return size;
-  }
-  
-  /** 
-    * The method setSize sets the size of this tree
-    * @author Tero Kettunen
-    * @param newSize puun solmujen uusi lukumäärä
-    *
-    */
-
-  public void setSize(int newSize){
-    this.size = newSize;
-  }
 
   /**
     * The method getOrderedListData forms and returns the elements stored in this tree in an ordered list
     * @author Juhani Seppälä
-    *
     */
   public ArrayList<E> getOrderedListData() {
     ArrayList<E> data = new ArrayList<E>();
@@ -478,7 +471,6 @@ public class RBTree<E extends Comparable<E>> {
      * @param data The list to be appended with the elements of the subtree denoted by the parameter-given node
      * @return The elements of the subtree denoted by the parameter-given node (for convenience)
      * @author Juhani Seppälä
-     *
      */
   private ArrayList<E> inorderAddBranch(RBTreeNode<E> node, ArrayList<E> data) {
     if (node.getLeftChild() != null && !node.getLeftChild().getSentinel())
@@ -497,7 +489,6 @@ public class RBTree<E extends Comparable<E>> {
     * @param list The list of the elements to be formed into a new tree
     * @return A balanced RBTree representation of the parameter-given list of elements
     * @author Juhani Seppälä
-    *
     */
   public RBTree<E> treeFromList(ArrayList<E> list) {
     RBTree<E> tree = new RBTree<E>();
@@ -527,10 +518,9 @@ public class RBTree<E extends Comparable<E>> {
 
     RBTreeNode<E> node = new RBTreeNode<E>(list.get(pivot));
 
+    node.setColor(1);
     node.setLeftChild(treeFromListNode(list, start, pivot - 1));
     node.setRightChild(treeFromListNode(list, pivot + 1, end));
-
-    node.setColor(1);
 
     if (node.getLeftChild() == null) {
       RBTreeNode<E> sentinelLeft = new RBTreeNode<E>();
@@ -551,7 +541,6 @@ public class RBTree<E extends Comparable<E>> {
   }
 
   /**
-    * Metodi colorBST värittää tasapainoisen binääripuun syvimmät solmut punaisiksi
     * The method colorBST sets the color of the deepest nodes in the balanced RBTree to red
     * @param tree The tree to be colored
     * @author Juhani Seppälä
@@ -576,7 +565,7 @@ public class RBTree<E extends Comparable<E>> {
     if (node == null || node.getSentinel())
       return;
 
-    if (level == height) {
+    if (level == height && node.getParent() != null) {
       node.setColor(0);
     }
 
@@ -586,6 +575,9 @@ public class RBTree<E extends Comparable<E>> {
 
   /**
     * The method listUnion forms and returns the union of the parameter-given lists in a new list
+    * @param list1 The first list used to construct the union
+    * @param list2 The second list used to construct the union
+    * @return The intersection of the elements in the parameter-given lists
     * @author Juhani Seppälä
     */
   private ArrayList<E> listUnion(ArrayList<E> list1, ArrayList<E> list2) {
@@ -660,17 +652,4 @@ public class RBTree<E extends Comparable<E>> {
     }
     return newList;
   }
-
-  /**
-    * The method height calculates and returns the height of the parameter-given node
-    * @param node The node of interest
-    * @return The height of the parameter-given node
-    * @author Juhani Seppälä
-    */
-  private int getHeight(RBTreeNode<E> node) {
-    if (node.getSentinel())
-      return  -1;
-    return 1 + Math.max(getHeight(node.getLeftChild()), getHeight(node.getRightChild()));
-  }
-  
 } // class

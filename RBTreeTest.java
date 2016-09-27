@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
-  * The clas RBTreeTest is the test class for RBTree
+  * The class RBTreeTest is the test class for RBTree
   * @author Tero Kettunen
   * @author Juhani Seppälä
   *
@@ -19,8 +19,8 @@ public class RBTreeTest {
     RBTree<Integer> puu = new RBTree<Integer>();
     r = new Random();
     
-    int N = 20; // Syötekoko
-    int K = 20; // Toistot 
+    int N = 20; // Randomly generated tree size
+    int K = 20; // Number of repeated runs
     if(args.length > 0)
       N = Integer.valueOf(args[0]);
     if (args.length > 1)
@@ -64,7 +64,7 @@ public class RBTreeTest {
   }  
   
   /*
-   * Add testi
+   * add() test
    */
   private static boolean testAdd(int runs, int n) {
     boolean success = true;
@@ -80,7 +80,7 @@ public class RBTreeTest {
   }
 
   /*
-   * Remove testi
+   * remove() test
    */
   private static boolean testRemove(int runs, int n) {
     boolean success = true;
@@ -101,7 +101,7 @@ public class RBTreeTest {
   }
 
   /*
-   * union() testi
+   * union() test
    */
   private static boolean testUnion(int runs, int n) {
     boolean success = true;
@@ -171,7 +171,6 @@ public class RBTreeTest {
         testTree.add(r.nextInt(2 * n));
       }
       if (!checkRBTree(testTree)) {
-        BTreePrinter.printNode(testTree.getRoot());
         success = false;
         break;
       }
@@ -181,21 +180,28 @@ public class RBTreeTest {
   
   /**
     * The method printTree prints the parameter-given tree (pre-order)
+    * @param tree The tree to be printed
+    * @author Tero Kettunen
     */
-  private static void printTree(RBTree puu){
+  private static void printTree(RBTree tree){
     
-    if(puu.isEmpty()){
+    if(tree.isEmpty()){
       System.out.println("The tree is empty");
     }else{
-      int n = puu.size();
-      RBTreeNode juuri = puu.getRoot();
-      System.out.println("\nJuuri on " + juuri.getElement()); 
-      System.out.println("Vari (0=red, 1= black) |  elementti");
+      int n = tree.size();
+      RBTreeNode root = tree.getRoot();
+      System.out.println("\nThe root is " + root.getElement()); 
+      System.out.println("Color (0=red, 1= black) |  element");
       
-      PrintTreeHelper(juuri);
+      PrintTreeHelper(root);
     }
   }
   
+  /**
+    * The method PrintTreeHelper is the recursion helper method of the method printTree
+    * @param node The node to be handled
+    * @author Tero Kettunen
+    */
   private static void PrintTreeHelper(RBTreeNode node){
   
     RBTreeNode vl = node.getLeftChild();
@@ -213,9 +219,13 @@ public class RBTreeTest {
     } 
   }
 
-  /*
-   * Metodi randomRBTree muodostaa ja palauttaa parametrina annetun kokoisen RBTreen
-   */
+  /**
+    * The method randomRBTree generates and returns a new random tree based on the parameter-given size and
+    * adds the added data to the parameter given list
+    * @param n The size of the randomly generated tree
+    * @param addedData The list to be appended with the nodes that were added to the tree
+    * @return New random tree of size parameter n 
+    */
   private static RBTree<Integer> randomRBTree(int n, ArrayList<Integer> addedData) {
     RBTree<Integer> tree = new RBTree<Integer>();
     for (int i = 0; i < n; i++){
@@ -227,27 +237,34 @@ public class RBTreeTest {
     return tree;
   }
   
-  /*
-    Metodi minHeight laskee ja palauttaa lyhimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
-  */
+  /**
+    * The method minHeight calculates and returns the shortest path from the parameter-given node to a leaf
+    * @param node The node for which the minimal height is to be calculated
+    * @return The length of the shortest path from this node to a leaf node
+    */
   private static int minHeight(RBTreeNode<Integer> node) {
     if (node == null || node.getSentinel())
       return 0;
     return 1 + Math.min(minHeight(node.getLeftChild()), minHeight(node.getRightChild()));
   }
 
-  /*
-    Metodi maxHeight laskee ja palauttaa pisimmän yksinkertaisen polun parametrina annetusta solmusta lehteen.
-  */
+  /**
+    * The method maxHeight calculates and returns the longest path from the parameter-given node to a leaf
+    * @param node The node for which the maximal height is to be calculated
+    * @return The length of the longest path from this node to a leaf node
+    */
   private static int maxHeight(RBTreeNode<Integer> node) {
     if (node == null || node.getSentinel())
       return  0;
     return 1 + Math.max(maxHeight(node.getLeftChild()), maxHeight(node.getRightChild()));
   }
 
-  /*
-   * Metodi blackHeight palauttaa solmun mustan korkuden, tai -1 virhearvon 
-   */
+  /**
+    * The method blackHeight calculates and returns the number black nodes on the path from the parameter-given node to the leaves
+    * @param node The node for which black-height is to be calculated
+    * @return The number of black nodes on the path from parameter-given node to the leaves, or -1, if all paths dit not have same number of black nodes
+    * @author Juhani Seppälä
+    */
   private static int blackHeight(RBTreeNode<Integer> node) {
     int bh = 0;
     int bhl = 0;
@@ -269,57 +286,57 @@ public class RBTreeTest {
     return bh;
   }
   
-  /*
-    Tarkistetaan, toteuttaako puu puna-mustan puun vaatimukset:
-      1) Solmu on joko musta tai punainen
-      2) Juuri on musta
-      3) Sentinel-solmut (lehdet) mustia
-      4) Jos solmu on punainen, kummatkin lapset mustia
-      5) Jokaiselle solmulle: kaikki yksinkertaiset polut solmusta lehtiin sisältävät yhtä monta mustaa solmua (solmua itseään ei lasketa, sentinel lasketaan)
-  */
-  private static boolean checkRBTree(RBTree<Integer> puu) {
-    if(puu.isEmpty())
+  /**
+    * The method checkRBTree validates the tree based on certain expected properties of Red-Black Trees:
+    * 1) A node is either red or black
+    * 2) The root is black
+    * 3) A sentinel (nil) node is black
+    * 4) If a node is red, both its children are black
+    * 5) For each node: all simple paths from it to leaves contain same number of black nodes
+    */
+  private static boolean checkRBTree(RBTree<Integer> testTree) {
+    if(testTree.isEmpty())
       return true;
 
-    RBTreeNode<Integer> juuri = puu.getRoot();
+    RBTreeNode<Integer> root = testTree.getRoot();
 
-    if (!checkInOrderList(puu.getOrderedListData())) {
+    if (!checkInOrderList(testTree.getOrderedListData())) {
       System.out.println("Not in order");
       return false;
     }
 
     /*
-     * Ominaisuus 2
+     * Property 2
      */
-    if(juuri.getColor() != 1)
+    if(root.getColor() != 1)
       return false;
 
     /*
-     * Tasapainoisuus
+     * General tree balance property
      */
-    if (maxHeight(juuri) > minHeight(juuri) * 2) {
+    if (maxHeight(root) > minHeight(root) * 2) {
       System.out.println("Not balanced");
       return false;
     }
 
     /*
-     * Ominaisuus 5
+     * Property 5
      */
-    if (blackHeight(juuri) == -1) {
+    if (blackHeight(root) == -1) {
       System.out.println("Black-height error");
       return false;
     }
 
-    return checkRBTreeApu(juuri);
+    return checkRBTreeHelper(root);
   }
   
   /*
-   * CheckRBTree rekursio. Ominaisuuksien 3 ja 4 tarkistus.
+   * CheckRBTree recursion. Properties 3 and 4
    */
-  private static boolean checkRBTreeApu(RBTreeNode<Integer> node) {
+  private static boolean checkRBTreeHelper(RBTreeNode<Integer> node) {
 
     /*
-     * Ominaisuus 3
+     * Property 3
      */
     if (node.getSentinel() && node.getColor() != 1) 
       return false;
@@ -330,7 +347,7 @@ public class RBTreeTest {
     }
 
     /*
-     * Ominaisuus 4
+     * Property 4
      */
     if (node.getColor() == 0) {
       if (node.getLeftChild() != null && node.getLeftChild().getColor() == 0)
@@ -339,18 +356,21 @@ public class RBTreeTest {
         return false;
     }
 
-    if (node.getLeftChild() != null && !checkRBTreeApu(node.getLeftChild()))
+    if (node.getLeftChild() != null && !checkRBTreeHelper(node.getLeftChild()))
       return false;
 
-    if (node.getRightChild() != null && !checkRBTreeApu(node.getRightChild()))
+    if (node.getRightChild() != null && !checkRBTreeHelper(node.getRightChild()))
       return false;
 
     return true; 
   }
 
-  /*
-   * Listan järjestys
-   */
+  /**
+     * The method checkInOrderList checks that a parameter-given list is in order
+     * @param list The list to be checked
+     * @return True if the parameter-given list was in order
+     * @author Juhani Seppälä
+     */
   private static boolean checkInOrderList(ArrayList<Integer> list) {
     if (list.size() <= 1)
       return true;
@@ -365,136 +385,5 @@ public class RBTreeTest {
     }
     return true;
   }
-
- //TODO, tarkista toimiiko edes
-  private static RBTree<Integer> testTree(){
-    
-    RBTree<Integer> puu = new RBTree<Integer>();
-    
-    puu.setRoot(new RBTreeNode<Integer>(7,null,null,null,1));  
-        //7 juureksi,           vanhempi, lapset null, väri musta
-    
-    RBTreeNode<Integer> juuri = puu.getRoot();
-    
-    // juuren lapset
-    juuri.setLeftChild(new RBTreeNode<Integer>(2,juuri,null,null,0));
-    juuri.setRightChild(new RBTreeNode<Integer>(11,juuri,null,null,0));
-    
-    //vasen haara
-    RBTreeNode<Integer> vh = juuri.getLeftChild();
-    
-    vh.setLeftChild(new RBTreeNode<Integer>(1,vh,null,null,1));
-    vh.setRightChild(new RBTreeNode<Integer>(5,vh,null,null,1));
-    
-    RBTreeNode<Integer> vho = vh.getRightChild();
-    
-    vho.setLeftChild(new RBTreeNode<Integer>(4,vho,null,null,0));
-    
-    //oikea haara
-    RBTreeNode<Integer> oh = juuri.getRightChild();
-    
-    oh.setLeftChild(new RBTreeNode<Integer>(8,oh,null,null,1));
-    oh.setRightChild(new RBTreeNode<Integer>(14,oh,null,null,1));
-    
-    RBTreeNode<Integer> oho = oh.getRightChild();
-    
-    oho.setRightChild(new RBTreeNode<Integer>(15,oho,null,null,0));
-    
-  puu.setSize(10);
-    return puu;
-    
-  }
-
-} // class
-
-class BTreePrinter {
-
-    public static <E extends Comparable<?>> void printNode(RBTreeNode<E> root) {
-        int maxLevel = BTreePrinter.maxLevel(root);
-
-        printNodeInternal(Collections.singletonList(root), 1, maxLevel);
-    }
-
-    private  static <E extends Comparable<?>> void printNodeInternal(List<RBTreeNode<E>> nodes, int level, int maxLevel) {
-        if (nodes.isEmpty() || BTreePrinter.isAllElementsNull(nodes))
-            return;
-
-        int floor = maxLevel - level;
-        int endgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
-        int firstSpaces = (int) Math.pow(2, (floor)) - 1;
-        int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
-
-        BTreePrinter.printWhitespaces(firstSpaces);
-
-        List<RBTreeNode<E>> newNodes = new ArrayList<RBTreeNode<E>>();
-        for (RBTreeNode<E> node : nodes) {
-            if (node != null && !node.getSentinel()) {
-                if (node.getColor() == 0)
-                  System.out.print("r");
-                else
-                  System.out.print("b");
-
-                System.out.print(node);
-
-                newNodes.add(node.getLeftChild());
-                newNodes.add(node.getRightChild());
-            } else {
-                newNodes.add(null);
-                newNodes.add(null);
-                System.out.print(" ");
-            }
-
-            BTreePrinter.printWhitespaces(betweenSpaces);
-        }
-        System.out.println("");
-
-        for (int i = 1; i <= endgeLines; i++) {
-            for (int j = 0; j < nodes.size(); j++) {
-                BTreePrinter.printWhitespaces(firstSpaces - i);
-                if (nodes.get(j) == null) {
-                    BTreePrinter.printWhitespaces(endgeLines + endgeLines + i + 1);
-                    continue;
-                }
-
-                if (nodes.get(j).getLeftChild() != null && !nodes.get(j).getLeftChild().getSentinel())
-                    System.out.print("/");
-                else
-                    BTreePrinter.printWhitespaces(1);
-
-                BTreePrinter.printWhitespaces(i + i - 1);
-
-                if (nodes.get(j).getRightChild() != null && !nodes.get(j).getRightChild().getSentinel())
-                    System.out.print("\\");
-                else
-                    BTreePrinter.printWhitespaces(1);
-
-                BTreePrinter.printWhitespaces(endgeLines + endgeLines - i);
-            }
-
-            System.out.println("");
-        }
-
-        printNodeInternal(newNodes, level + 1, maxLevel);
-    }
-
-    private static void printWhitespaces(int count) {
-        for (int i = 0; i < count; i++)
-            System.out.print(" ");
-    }
-
-    private static <E extends Comparable<?>> int maxLevel(RBTreeNode<E> node) {
-        if (node == null || node.getSentinel())
-            return 0;
-
-        return Math.max(BTreePrinter.maxLevel(node.getLeftChild()), BTreePrinter.maxLevel(node.getRightChild())) + 1;
-    }
-
-    private static <E> boolean isAllElementsNull(List<E> list) {
-        for (Object object : list) {
-            if (object != null)
-                return false;
-        }
-
-        return true;
-    }
+  
 } // class
