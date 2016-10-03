@@ -13,18 +13,22 @@ import java.util.Iterator;
  
 public class RBTreeTest {
   private static Random r;
+  private static final int MAXN = 1280000;
 
-  public static void main(String[] args){
+  public static void main(String[] args) {
   
     RBTree<Integer> puu = new RBTree<Integer>();
     r = new Random();
     
     int N = 20; // Randomly generated tree size
     int K = 20; // Number of repeated runs
+    int P = 0; // Flag for whether to run performance test (default = off)
     if(args.length > 0)
       N = Integer.valueOf(args[0]);
     if (args.length > 1)
       K = Integer.valueOf(args[1]);
+    if (args.length > 2)
+      P = Integer.valueOf(args[2]);
 
     boolean successAdd = testAdd(K, N);
     if (successAdd)
@@ -60,8 +64,19 @@ public class RBTreeTest {
       System.out.println("All tests OK!");
     else
       System.out.println("All tests not OK!");
+
+    if (P == 1){
+      perfAdd(K);
+      perfRemove(K);
+    }
+
+    long start = System.nanoTime();
+    RBTree<Integer> t = randomRBTree(10000000, new ArrayList<Integer>());
+    long time = (System.nanoTime() - start);
+    System.out.println("Add (N = 1000000): " + (double) time / 1000000 + " ms");
+
       
-  }  
+}  
   
   /*
    * add() test
@@ -176,6 +191,37 @@ public class RBTreeTest {
       }
     }
     return success;
+  }
+
+  private static void perfAdd(int runs) {
+    long totalTime = 0;
+    for (int i = 10000; i <= MAXN; i *= 2) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        long start = System.nanoTime();
+        RBTree<Integer> t = randomRBTree(i, new ArrayList<Integer>());
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Add average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+    }
+  }
+
+  private static void perfRemove(int runs) {
+    long totalTime = 0;
+    ArrayList<Integer> addedData;
+    for (int i = 10000; i <= MAXN; i *= 2) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        addedData = new ArrayList<Integer>();
+        RBTree<Integer> t = randomRBTree(2 * i, addedData);
+        long start = System.nanoTime();
+        for (int z = 0; z < addedData.size() / 2; z++) {
+          t.remove(addedData.get(z));
+        }
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Remove average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+    }
   }
   
   /**
