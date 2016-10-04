@@ -3,17 +3,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 /**
   * The class RBTreeTest is the test class for RBTree
   * @author Tero Kettunen
   * @author Juhani Seppälä
-  *
   */
- 
 public class RBTreeTest {
   private static Random r;
-  private static final int MAXN = 1280000;
+  private static final int MAXN = 200000;
 
   public static void main(String[] args) {
   
@@ -68,13 +76,10 @@ public class RBTreeTest {
     if (P == 1){
       perfAdd(K);
       perfRemove(K);
+      perfUnion(K);
+      perfIntersection(K);
+      perfDifference(K);
     }
-
-    long start = System.nanoTime();
-    RBTree<Integer> t = randomRBTree(10000000, new ArrayList<Integer>());
-    long time = (System.nanoTime() - start);
-    System.out.println("Add (N = 1000000): " + (double) time / 1000000 + " ms");
-
       
 }  
   
@@ -195,32 +200,141 @@ public class RBTreeTest {
 
   private static void perfAdd(int runs) {
     long totalTime = 0;
-    for (int i = 10000; i <= MAXN; i *= 2) {
+    long totalMemory = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Path file = Paths.get("results-add.txt");
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += 10000) {
+      totalMemory = 0;
       totalTime = 0;
       for (int j = 0; j < runs; j++) {
+        long startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         long start = System.nanoTime();
         RBTree<Integer> t = randomRBTree(i, new ArrayList<Integer>());
         totalTime += (System.nanoTime() - start);
+        long endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        if (endMem - startMem > 0)
+          totalMemory += endMem - startMem;
       }
-      System.out.println("Add average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+      System.out.println("Add average (N = " + i + ", runs = " + runs + "): " + df.format((totalTime / runs) / 1000000) + " ms");
+      System.out.println("Add average memory (N = " + i + ", runs = " + runs + "): " + df.format((totalMemory / runs) / 1000000) + " MB");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
     }
   }
 
   private static void perfRemove(int runs) {
     long totalTime = 0;
+    long totalMemory = 0;
     ArrayList<Integer> addedData;
-    for (int i = 10000; i <= MAXN; i *= 2) {
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Path file = Paths.get("results-remove.txt");
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += 10000) {
+      totalMemory = 0;
       totalTime = 0;
       for (int j = 0; j < runs; j++) {
         addedData = new ArrayList<Integer>();
-        RBTree<Integer> t = randomRBTree(2 * i, addedData);
+        RBTree<Integer> t = randomRBTree(i, addedData);
+        long startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         long start = System.nanoTime();
         for (int z = 0; z < addedData.size() / 2; z++) {
           t.remove(addedData.get(z));
         }
+        totalTime += System.nanoTime() - start;
+        long endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        if (endMem - startMem > 0)
+          totalMemory += endMem - startMem;
+      }
+      System.out.println("Remove average (N = " + i + ", runs = " + runs + "): " + df.format((totalTime / runs) / 1000000) + " ms");
+      System.out.println("Remove average memory (N = " + i + ", runs = " + runs + "): " + df.format((totalMemory / runs) / 1000000) + " MB");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  private static void perfUnion(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Path file = Paths.get("results-union.txt");
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += 10000) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.union(t2);
         totalTime += (System.nanoTime() - start);
       }
-      System.out.println("Remove average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+      System.out.println("Union average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  private static void perfIntersection(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Path file = Paths.get("results-intersection.txt");
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += 10000) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.intersection(t2);
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Intersection average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  private static void perfDifference(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Path file = Paths.get("results-difference.txt");
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += 10000) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.difference(t2);
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Difference average (N = " + i + ", runs = " + runs + "): " + (double)(totalTime / runs) / 1000000 + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
     }
   }
   
