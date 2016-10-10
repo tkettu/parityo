@@ -364,9 +364,9 @@ public class RBTree<E extends Comparable<E>> {
     * @return The predecessor node of the parameter-given node, or null, if no predecessor exists
     */
   public RBTreeNode<E> predecessor(RBTreeNode<E> node) {
-    if (node.getLeftChild() != null) {
+    if (node.getLeftChild() != null && !node.getLeftChild().getSentinel()) {
       node = node.getLeftChild();
-      while (node.getRightChild() != null) {
+      while (node.getRightChild() != null && !node.getRightChild().getSentinel()) {
         node = node.getRightChild();
       }
       return node;

@@ -3,28 +3,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Calendar;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
   * The class RBTreeTest is the test class for RBTree
   * @author Tero Kettunen
   * @author Juhani Seppälä
-  *
   */
- 
 public class RBTreeTest {
   private static Random r;
+  private static final int MAXN = 1000000; // Max input size for tests
+  private static final int PERF_INCREMENT = 100000; // Size of increments (only for benchmarks)
 
-  public static void main(String[] args){
+  public static void main(String[] args) {
   
     RBTree<Integer> puu = new RBTree<Integer>();
     r = new Random();
     
     int N = 20; // Randomly generated tree size
     int K = 20; // Number of repeated runs
+    int P = 0; // Flag for whether to run performance test (default = off)
     if(args.length > 0)
       N = Integer.valueOf(args[0]);
     if (args.length > 1)
       K = Integer.valueOf(args[1]);
+    if (args.length > 2)
+      P = Integer.valueOf(args[2]);
 
     boolean successAdd = testAdd(K, N);
     if (successAdd)
@@ -60,7 +76,14 @@ public class RBTreeTest {
       System.out.println("All tests OK!");
     else
       System.out.println("All tests not OK!");
-      
+
+    if (P == 1) {
+      perfAdd(K);
+      perfRemove(K);
+      perfUnion(K);
+      perfIntersection(K);
+      perfDifference(K);
+    }
   }  
   
   /*
@@ -176,6 +199,181 @@ public class RBTreeTest {
       }
     }
     return success;
+  }
+
+  /**
+    * The method perfAdd benchmarks the add operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
+  private static void perfAdd(int runs) {
+    long totalTime = 0;
+    long totalMemory = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    Calendar now = Calendar.getInstance();
+    String fileName = "results-add-" + timeStamp() + ".txt";
+    Path file = Paths.get(fileName);
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)\tMemory(MB)"), Charset.forName("UTF-8"), CREATE, WRITE, TRUNCATE_EXISTING);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += PERF_INCREMENT) {
+      totalMemory = 0;
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        long startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long start = System.nanoTime();
+        RBTree<Integer> t = randomRBTree(i, new ArrayList<Integer>());
+        totalTime += (System.nanoTime() - start);
+        long endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        if (endMem - startMem > 0)
+          totalMemory += endMem - startMem;
+      }
+      System.out.println("Add average (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalTime / runs) / 1000000) + " ms");
+      System.out.println("Average memory (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalMemory / runs) / 1000000) + " MB");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((double)(totalTime / runs) / 1000000) + "\t" + df.format((double)(totalMemory / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  /**
+    * The method perfRemove benchmarks the remove operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
+  private static void perfRemove(int runs) {
+    long totalTime = 0;
+    long totalMemory = 0;
+    ArrayList<Integer> addedData;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    String fileName = "results-remove-" + timeStamp() + ".txt";
+    Path file = Paths.get(fileName);
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE, WRITE, TRUNCATE_EXISTING);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += PERF_INCREMENT) {
+      totalMemory = 0;
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        addedData = new ArrayList<Integer>();
+        RBTree<Integer> t = randomRBTree(i, addedData);
+        long startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long start = System.nanoTime();
+        for (int z = 0; z < addedData.size() / 2; z++) {
+          t.remove(addedData.get(z));
+        }
+        totalTime += System.nanoTime() - start;
+        long endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        if (endMem - startMem > 0)
+          totalMemory += endMem - startMem;
+      }
+      System.out.println("Remove average (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalTime / runs) / 1000000) + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((double)(totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  /**
+    * The method perfUnion benchmarks the union operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
+  private static void perfUnion(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    String fileName = "results-union-" + timeStamp() + ".txt";
+    Path file = Paths.get(fileName);
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE, WRITE, TRUNCATE_EXISTING);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += PERF_INCREMENT) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.union(t2);
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Union average (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalTime / runs) / 1000000) + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((double)(totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  /**
+    * The method perfIntersection benchmarks the intersection operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
+  private static void perfIntersection(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    String fileName = "results-intersect-" + timeStamp() + ".txt";
+    Path file = Paths.get(fileName);
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE, WRITE, TRUNCATE_EXISTING);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += PERF_INCREMENT) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.intersection(t2);
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Intersection average (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalTime / runs) / 1000000) + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((double)(totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
+  }
+
+  /**
+    * The method perfDifference benchmarks the dífference operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
+  private static void perfDifference(int runs) {
+    long totalTime = 0;
+    DecimalFormat df = new DecimalFormat("#.##");
+    df.setRoundingMode(RoundingMode.CEILING);
+    String fileName = "results-difference-" + timeStamp() + ".txt";
+    Path file = Paths.get(fileName);
+    try {
+      Files.write(file, Arrays.asList("N\tTime(ms)"), Charset.forName("UTF-8"), CREATE, WRITE, TRUNCATE_EXISTING);
+    } catch (IOException ioe) {}
+    for (int i = 0; i <= MAXN; i += PERF_INCREMENT) {
+      totalTime = 0;
+      for (int j = 0; j < runs; j++) {
+        RBTree<Integer> t1 = randomRBTree(i, new ArrayList<Integer>());
+        RBTree<Integer> t2 = randomRBTree(i, new ArrayList<Integer>());
+        long start = System.nanoTime();
+        RBTree<Integer> test = t1.difference(t2);
+        totalTime += (System.nanoTime() - start);
+      }
+      System.out.println("Difference average (N = " + i + ", runs = " + runs + "): " + df.format((double)(totalTime / runs) / 1000000) + " ms");
+      List<String> line = Arrays.asList("" + i + "\t" + df.format((double)(totalTime / runs) / 1000000));
+      try {
+        Files.write(file, line, Charset.forName("UTF-8"), APPEND);
+      } catch (IOException ioe) {}
+    }
   }
   
   /**
@@ -384,6 +582,30 @@ public class RBTreeTest {
       previous = next;
     }
     return true;
+  }
+
+  /**
+    * The method timeStamp is a helper method for file timestamp generation using the Calendar class
+    * @return The current time in the following (padded) format: yyyy-mm-dd-hh:mm:ss
+    * @author Juhani Seppälä
+    */
+  private static String timeStamp() {
+    Calendar now = Calendar.getInstance();
+    String year = "" + now.get(Calendar.YEAR);
+    int m = now.get(Calendar.MONTH) + 1;
+    String month = "" + m;
+    String day = "" + now.get(Calendar.DAY_OF_MONTH);
+    String hour = "" + now.get(Calendar.HOUR_OF_DAY);
+    String minute = "" + now.get(Calendar.MINUTE);
+    String second = "" + now.get(Calendar.SECOND);
+
+    month = String.format("%2s", month).replace(" ", "0");
+    day = String.format("%2s", day).replace(" ", "0");
+    hour = String.format("%2s", hour).replace(" ", "0");
+    minute = String.format("%2s", minute).replace(" ", "0");
+    second = String.format("%2s", second).replace(" ", "0");
+
+    return year + "-" + month + "-" + day + "-" + hour + ":" + minute + ":" + second;
   }
   
 } // class
