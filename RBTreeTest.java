@@ -24,8 +24,8 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
   */
 public class RBTreeTest {
   private static Random r;
-  private static final int MAXN = 1000000;
-  private static final int PERF_INCREMENT = 100000;
+  private static final int MAXN = 1000000; // Max input size for tests
+  private static final int PERF_INCREMENT = 100000; // Size of increments (only for benchmarks)
 
   public static void main(String[] args) {
   
@@ -77,15 +77,14 @@ public class RBTreeTest {
     else
       System.out.println("All tests not OK!");
 
-    if (P == 1){
+    if (P == 1) {
       perfAdd(K);
       perfRemove(K);
       perfUnion(K);
       perfIntersection(K);
       perfDifference(K);
     }
-      
-}  
+  }  
   
   /*
    * add() test
@@ -202,6 +201,12 @@ public class RBTreeTest {
     return success;
   }
 
+  /**
+    * The method perfAdd benchmarks the add operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
   private static void perfAdd(int runs) {
     long totalTime = 0;
     long totalMemory = 0;
@@ -234,6 +239,12 @@ public class RBTreeTest {
     }
   }
 
+  /**
+    * The method perfRemove benchmarks the remove operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
   private static void perfRemove(int runs) {
     long totalTime = 0;
     long totalMemory = 0;
@@ -269,6 +280,12 @@ public class RBTreeTest {
     }
   }
 
+  /**
+    * The method perfUnion benchmarks the union operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
   private static void perfUnion(int runs) {
     long totalTime = 0;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -295,6 +312,12 @@ public class RBTreeTest {
     }
   }
 
+  /**
+    * The method perfIntersection benchmarks the intersection operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
   private static void perfIntersection(int runs) {
     long totalTime = 0;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -321,6 +344,12 @@ public class RBTreeTest {
     }
   }
 
+  /**
+    * The method perfDifference benchmarks the dífference operation averaging over the parameter-given
+    * run count and saves the results to a file
+    * @param runs The number of repeated runs to average over
+    * @author Juhani Seppälä
+    */
   private static void perfDifference(int runs) {
     long totalTime = 0;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -555,6 +584,11 @@ public class RBTreeTest {
     return true;
   }
 
+  /**
+    * The method timeStamp is a helper method for file timestamp generation using the Calendar class
+    * @return The current time in the following (padded) format: yyyy-mm-dd-hh:mm:ss
+    * @author Juhani Seppälä
+    */
   private static String timeStamp() {
     Calendar now = Calendar.getInstance();
     String year = "" + now.get(Calendar.YEAR);
