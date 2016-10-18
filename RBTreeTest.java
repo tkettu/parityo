@@ -264,7 +264,7 @@ public class RBTreeTest {
         RBTree<Integer> t = randomRBTree(i, addedData);
         long startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         long start = System.nanoTime();
-        for (int z = 0; z < addedData.size() / 2; z++) {
+        for (int z = 0; z < addedData.size(); z++) {
           t.remove(addedData.get(z));
         }
         totalTime += System.nanoTime() - start;
